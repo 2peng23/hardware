@@ -11,11 +11,13 @@
     <hr class="sidebar-divider my-0" />
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item active">
+    <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fas fa-fw fa-tachometer-alt"></i>
-            <span>Dashboard</span></a>
+            <span>Dashboard</span>
+        </a>
     </li>
+
 
     <!-- Divider -->
     <hr class="sidebar-divider" />
@@ -42,19 +44,19 @@
 
     {{-- <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block" /> --}}
-    <li class="nav-item">
+    <li class="nav-item {{ request()->routeIs('categories') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('categories') }}">
             <i class="bi bi-ui-checks-grid"></i>
             <span>Categories</span></a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item {{ request()->routeIs('items') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('items') }}">
             <i class="fas fa-fw fa-shopping-bag"></i>
             <span>Items</span></a>
     </li>
 
-    <li class="nav-item">
-        <a class="nav-link" href="{{ route('dashboard') }}">
+    <li class="nav-item {{ request()->routeIs('inventory') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('inventory') }}">
             <i class="fa fa-fw fa-file"></i>
             <span>Inventory</span></a>
     </li>
@@ -63,7 +65,7 @@
             <i class="fa fa-fw fa-refresh"></i>
             <span>Request</span></a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item {{ request()->routeIs('admin-users') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin-users') }}">
             <i class="fas fa-fw fa-users"></i>
             <span>User</span></a>

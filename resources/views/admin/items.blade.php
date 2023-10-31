@@ -27,21 +27,11 @@
         </form>
     </div>
 
-    @if (session('message'))
-        <div class="alert alert-success alert-dismissible mt-2">
-            {{ session('message') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
-    @if (session('error'))
-        <div class="alert alert-warning alert-dismissible mt-2">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
+    <x-message />
 
     <x-success-message />
     <x-error-message />
+    <x-edit-product :data=$data />
     <x-edit-stock />
     <x-edit-critical />
     {{-- If product is empty it will show this --}}
@@ -53,7 +43,7 @@
             <table class="table">
                 <thead>
                     <tr class="text-center">
-                        <th scope="col">#</th>
+                        <th scope="col">Item Code</th>
                         <th scope="col">Item</th>
                         <th scope="col">Category</th>
                         <th scope="col">Price</th>
@@ -68,7 +58,7 @@
                     @endphp
                     @foreach ($products as $item)
                         <tr class="text-center">
-                            <th scope="row">{{ $id }}</th>
+                            <th scope="row">{{ $item->item_id }}</th>
                             <td>{{ $item->name }}</td>
                             <td>
                                 {{ $item->category }}
@@ -87,13 +77,13 @@
                             </td>
                             <td>
                                 <div class="d-flex justify-content-center gap-1">
-                                    <a href="" class="bg-success text-white rounded-lg">
-                                        <i class="fa fa-pencil px-1"></i>
-                                    </a>
-                                    <a href="" class=" bg-warning text-white rounded-lg">
-                                        <i class="fa fa-archive px-1"></i>
-                                    </a>
-                                    <a href="" class="bg-danger text-white rounded-lg">
+                                    <button value="{{ $item->id }}"
+                                        class="btn-success btn-sm btn text-white rounded-lg editProduct">
+                                        <i class="fa fa-pencil px-1 "></i>
+                                    </button>
+                                    <a href="{{ route('delete-product', $item->id) }}"
+                                        onclick="return confirm('Are you sure you want to delete this product?')"
+                                        class="bg-danger btn btn-danger btn-sm text-white rounded-lg">
                                         <i class="fa fa-trash px-1"></i>
                                     </a>
                                 </div>
@@ -107,41 +97,25 @@
             </table>
             {{ $products->links('vendor.pagination.bootstrap-5') }}
         </div>
+
+        {{-- <div id="messageModal" class="messageModal">
+            <!-- Modal content -->
+            <div class="message-modal-content animate__animated animate__bounceIn rounded">
+                <p class="text-success fs-5">This is a pop-up message!</p>
+                <span class="message-close">
+                    <i class="fa fa-check-circle fs-1 text-success animate__zoomIn animate__animated"></i>
+                </span>
+            </div>
+
+        </div> --}}
     @endif
 
 
 
 
+
+
     <script>
-        // create product
-        $(document).ready(function() {
-            $('#add-product').submit(function(e) {
-                e.preventDefault();
-                $.ajax({
-                    url: '{{ url('add-product') }}',
-                    data: $('#add-product').serialize(),
-                    type: 'post',
-                    success: function(result) {
-                        $('#error-message').css('display', 'none');
-                        $('#success-message').css('display', 'block');
-                        $('#success-message').html(result.success);
-                        $('#add-product')[0].reset();
-                        window.location.href = '/items';
-                    },
-                    error: function(xhr, status, error) {
-                        var errors = xhr.responseJSON.errors;
-                        var errorString = '';
-                        $.each(errors, function(key, value) {
-                            errorString += value + '<br>';
-                        });
-                        $('#success-message').css('display', 'none');
-                        $('#error-message').css('display', 'block');
-                        $('#error-message').html(errorString);
-                    }
-                });
-            });
-        });
-        // delay submission of form 
         let timeoutId;
 
         function delayedSubmit(input) {
@@ -150,6 +124,45 @@
                 input.form.submit();
             }, 500);
         }
+        // edit product
+        $(document).ready(function() {
+            $(document).on('click', '.editProduct', function() {
+                var item_id = $(this).val();
+                $('#editProduct').modal('show');
+
+                $.ajax({
+                    url: '/edit-product/' + item_id,
+                    type: 'GET',
+                    success: function(response) {
+                        console.log(response);
+                        $('#item_id2').val(item_id);
+                        $('#name2').val(response.product.name);
+                        $('#price2').val(response.product.price);
+                        $('#category2').val(response.product.category);
+                    }
+                });
+            });
+        });
+
+        // update product
+        $(document).ready(function() {
+            $(document).on('submit', '#update-product', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/update-product',
+                    data: $('#update-product').serialize(),
+                    type: 'put',
+                    success: function(result) {
+                        console.log(result.success);
+                        $('#error-message').css('display', 'none');
+                        $('#success-message').css('display', 'block');
+                        $('#success-message').html(result.success);
+                        $('#update-product')[0].reset();
+                        window.location.href = '/items';
+                    },
+                });
+            });
+        });
         // edit stock
         $(document).ready(function() {
             $(document).on('click', '.editbtn', function() {

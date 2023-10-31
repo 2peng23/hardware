@@ -47,46 +47,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <style>
-        /* Modal Content */
-        .messageModal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-
-        /* Modal Content Box */
-        .message-modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            height: 120px;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        /* Close Button */
-        .message-close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .message-close:hover,
-        .message-close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
         @media print {
             h1 {
                 margin-bottom: 50px;
@@ -134,7 +94,7 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-        @include('admin.Sidebar')
+        @include('staff.sidebar')
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
@@ -214,29 +174,6 @@
 
     <!-- Page level plugins -->
     <script src="/admin/vendor/chart.js/Chart.min.js"></script>
-
-    <script>
-        // Get the modal
-        var modal = document.getElementById("messageModal");
-
-        // Get the <span> element that closes the modal
-        var span = document.getElementsByClassName("message-close")[0];
-
-        // When the user clicks the close button, close the modal
-        span.onclick = function() {
-            modal.style.display = "none";
-        };
-
-        // When the user clicks anywhere outside of the modal, close it
-        window.onclick = function(event) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        };
-
-        // Open the modal
-        modal.style.display = "block";
-    </script>
 
     {{-- dropdown menu --}}
     <script>

@@ -69,20 +69,64 @@ class ProductController extends Controller
 
     public function addProduct(AddProdcut $request)
     {
-        // create new Product
-        $data = new Product();
-        $data->name = $request->name;
-        // $data->quantity = $request->quantity;
-        $data->price = $request->price;
-        $data->category = $request->category;
+        // Get the latest product
+        $latestProduct = Product::orderBy('id', 'desc')->first();
+        $latestItemId = $latestProduct ? (int) $latestProduct->item_id : 0;
+        $itemId = str_pad($latestItemId + 1, 4, '0', STR_PAD_LEFT);
 
-        $data->save();
+        // Check if the product already exists
+        $existingProduct = Product::where('name', $request->name)->first();
+        if ($existingProduct) {
+            // return response()->json([
+            //     'error' => 'Product name already exists!'
+            // ]);
+            return redirect()->back()->with('error', 'Product name already exist!');
+        }
 
+        // Create a new product
+        $product = new Product();
+        $product->item_id = $itemId;
+        $product->name = $request->name;
+        $product->price = $request->price;
+        $product->category = $request->category;
 
+        $product->save();
+
+        // return response()->json([
+        //     'success' => 'Product added successfully!'
+        // ]);
+        return redirect()->back()->with('message', 'Product successfully added!');
+    }
+
+    public function editProduct($id)
+    {
+        $product = Product::find($id);
         return response()->json([
-            'success' => 'Product added successfully!'
+            'product' => $product,
         ]);
     }
+
+    public function updateProduct(Request $request)
+    {
+        $item_id = $request->item_id;
+        $item = Product::find($item_id);
+        $item->name = $request->name;
+        $item->price = $request->price;
+        $item->category = $request->category;
+        $item->update();
+        return response()->json([
+            'success' => 'Item updated successfully!'
+        ]);
+    }
+
+    public function deleteProduct($id)
+    {
+        $product = Product::find($id);
+        $product->delete();
+        return redirect()->back()->with('error', 'Product Deleted!');
+    }
+
+
 
     public function editStock($id)
     {
@@ -136,5 +180,40 @@ class ProductController extends Controller
         return response()->json([
             'success' => 'Critical stock updated successfully!'
         ], 200); // Return a success response with status code 200
+    }
+
+
+    public function inventory(Request $request)
+    {
+        $products = DB::table('products');
+        $product_name = $request->product_name;
+        $product_category = $request->product_category;
+        $date_range = $request->daterange;
+
+        // Search by Date Range
+        if ($date_range) {
+            $dateArray = explode(' - ', $date_range);
+            $start_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[0])->startOfDay();
+            $end_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[1])->endOfDay();
+            $products = $products->whereBetween('created_at', [$start_date, $end_date]);
+        }
+
+        // Search by Name
+        if ($product_name) {
+            $products = $products->where('name', 'like', "%{$product_name}%");
+        }
+
+        // Search by Category
+        if ($product_category) {
+            $products = $products->where('category', 'like', "%{$product_category}%");
+        }
+
+        $products = $products->paginate(10);
+        $products->appends(['product_name' => $product_name]); // Add search query to pagination links
+        $products->appends(['product_category' => $product_category]); // Add search query to pagination links
+        $products->appends(['daterange' => $date_range]); // Add date range to pagination links
+
+        $category = Category::all();
+        return view('admin.inventory', compact('products', 'category', 'product_name', 'date_range'));
     }
 }

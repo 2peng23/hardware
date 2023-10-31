@@ -12,8 +12,7 @@
                     <div class="card widget-flat">
                         <div class="card-body">
                             <div class="float-end">
-                                <i
-                                    class="fa fa-refresh text-success animate__rotateIn animate__animated infinite animated"></i>
+                                <i class="fa fa-refresh text-success animate__rotateIn animate__animated infinity "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Number of Customers">On Process (Requests)</h6>
                             <h3 class="mt-3 mb-3">hello
@@ -26,7 +25,7 @@
                     <div class="card widget-flat">
                         <div class="card-body">
                             <div class="float-end">
-                                <i class="fa fa-thumbs-up text-primary animate__animated animate__rotateIn animated"></i>
+                                <i class="fa fa-thumbs-up text-primary animate__animated animate__bounceIn "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Number of Orders">New (Requests)</h6>
                             <h3 class="mt-3 mb-3">hello
@@ -41,7 +40,7 @@
                     <div class="card widget-flat">
                         <div class="card-body">
                             <div class="float-end">
-                                <i class="fa fa-thumbs-down text-danger animate__animated animate__rotateIn"></i>
+                                <i class="fa fa-thumbs-down text-danger animate__animated animate__bounceIn "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Average Revenue">Declined (Requests)</h6>
                             <h3 class="mt-3 mb-3">hello
@@ -54,7 +53,7 @@
                     <div class="card widget-flat">
                         <div class="card-body">
                             <div class="float-end">
-                                <i class="fa fa-rocket text-warning animate__rotateIn animate__animated"></i>
+                                <i class="fa fa-rocket text-warning animate__bounceIn animate__animated "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Growth">Released (Requests)</h6>
                             <h3 class="mt-3 mb-3">
@@ -111,7 +110,8 @@
                                         <td class="text-center">{{ $item->name }}</td>
                                         <td class="text-center">{{ $item->stock }}</td>
                                         <td class="text-center">
-                                            <span class="text-warning animate__animated infinite animate__flash animated">
+                                            <span style="color: rgb(255, 81, 0)"
+                                                class=" animate__animated infinite animate__flash animated infinity">
                                                 Critical
                                             </span>
                                         </td>
