@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     // staff
     Route::post('add-request', [StaffController::class, 'addRequest'])->name('add-request');
     Route::get('view-transaction/{id}', [StaffController::class, 'viewTransaction'])->name('view-transaction');
+    Route::get('fetch-product', [StaffController::class, 'fetchProduct'])->name('fetch-product');
 });
 
 Route::middleware('auth')->group(function () {

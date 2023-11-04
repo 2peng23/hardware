@@ -14,11 +14,10 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    <x-ajax-message />
 
 
 
-    <div class="card">
+    <div class="card" id="table-content">
         <div class="card-header">
             <div class="float-end">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#request-modal">
@@ -36,7 +35,6 @@
                         <th class="text-center">Transaction ID</th>
                         <th class="text-center">Requestor</th>
                         <th class="text-center">Office</th>
-                        <th class="text-center">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,33 +45,18 @@
                             <td class="text-muted">{{ $item->transaction_id }}</td>
                             <td class="text-muted">{{ Auth::user()->name }}</td>
                             <td class="text-muted">{{ Auth::user()->designation }}</td>
-                            <td class="text-muted">
-                                @if ($item->status == 'declined')
-                                    <p style="background-color: rgb(231, 198, 191); font-size:12px;"
-                                        class='rounded  mx-auto text-danger p-1'>
-                                        {{ $item->status }}</p>
-                                @elseif($item->status == 'pending')
-                                    <p style="background-color: rgb(231, 230, 191); font-size:12px;"
-                                        class='rounded  mx-auto text-warning p-1'>{{ $item->status }}</p>
-                                @elseif($item->status == 'approved')
-                                    <p style="background-color: rgb(192, 231, 191); font-size:12px;"
-                                        class='rounded  mx-auto text-success p-1'>
-                                        on-process</p>
-                                @else
-                                    <p style="background-color: rgb(191, 220, 231); font-size:12px;"
-                                        class='rounded  mx-auto text-primary p-1'>
-                                        {{ $item->status }}</p>
-                                @endif
-                            </td>
+
                         </tr>
                         <tr class="info-table" style="display: none">
-                            <td colspan="6">
+                            <td colspan="5">
                                 <table class="table table-bordered">
                                     <thead class="text-center ">
                                         <tr>
                                             <th>Item</th>
                                             <th>Category</th>
                                             <th>Quantity</th>
+                                            <th class="text-center">Status</th>
+
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -84,6 +67,24 @@
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->category }}</td>
                                             <td>{{ $item->quantity }}</td>
+                                            <td class="text-muted">
+                                                @if ($item->status == 'declined')
+                                                    <p style="background-color: rgb(231, 198, 191); font-size:12px;"
+                                                        class='rounded  mx-auto text-danger p-1'>
+                                                        {{ $item->status }}</p>
+                                                @elseif($item->status == 'pending')
+                                                    <p style="background-color: rgb(231, 230, 191); font-size:12px;"
+                                                        class='rounded  mx-auto text-warning p-1'>{{ $item->status }}</p>
+                                                @elseif($item->status == 'approved')
+                                                    <p style="background-color: rgb(192, 231, 191); font-size:12px;"
+                                                        class='rounded  mx-auto text-success p-1'>
+                                                        on-process</p>
+                                                @else
+                                                    <p style="background-color: rgb(191, 220, 231); font-size:12px;"
+                                                        class='rounded  mx-auto text-primary p-1'>
+                                                        {{ $item->status }}</p>
+                                                @endif
+                                            </td>
                                         </tr>
 
                                     </tbody>
@@ -94,11 +95,12 @@
                 </tbody>
             </table>
         </div>
+        {{ $transaction->links('vendor.pagination.bootstrap-5') }}
     </div>
-    {{ $transaction->links('vendor.pagination.bootstrap-5') }}
 
     <x-add-request :category=$category :products=$products />
-    <x-view-transaction />
+    {{-- <x-view-transaction /> --}}
+    <x-ajax-message />
 @endsection
 
 @section('scripts')
@@ -122,10 +124,15 @@
             // Call the function on document ready
             handleToggleInfo();
 
-            // create-transaction
-            $('form[id^="add-request-"]').submit(function(e) {
-                e.preventDefault();
-                var form = $(this);
+            // // create-transaction
+            // $('form[id^="add-request-"]').submit(function(e) {
+            //     e.preventDefault();
+            //     var form = $(this);
+            //     submitForm(form);
+            // });
+
+            // Function to submit the form via AJAX
+            function submitForm(form) {
                 $.ajax({
                     url: form.attr('action'),
                     data: form.serialize(),
@@ -139,11 +146,12 @@
                             $('#ajax-error').html(result.failed);
                         }
                         form[0].reset();
-                        $('#request-modal').modal('hide');
-                        $('.table2').load(window.location.href + ' .table2', function() {
-                            // Call the function again to reattach the event listener
-                            handleToggleInfo();
-                        });
+                        // $('#request-modal').modal('hide');
+                        $('#table-content').load(window.location.href + ' #table-content',
+                            function() {
+                                // Call the function again to reattach the event listener
+                                handleToggleInfo();
+                            });
 
                         // Hide success message after 1.5 seconds
                         setTimeout(function() {
@@ -152,17 +160,50 @@
                         }, 2000); //2 seconds
                     },
                     error: function(xhr, status, error) {
+                        // Handling errors and displaying error messages
                         var errors = xhr.responseJSON.errors;
                         var errorString = '';
                         $.each(errors, function(key, value) {
                             errorString += value + '<br>';
                         });
-                        $('#ajax-success').css('display', 'none');
-                        $('#ajax-error').css('display', 'block');
+                        $('#ajax-success').hide();
+                        $('#ajax-error').show();
                         $('#ajax-error').html(errorString);
                     }
                 });
+            }
+
+            // Handle form submission on button click
+            $(document).on('click', '.requestbutton', function(e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+                submitForm(form);
             });
+
+
+
+            fetchProduct();
+
+            function fetchProduct(product_name = '') {
+                $.ajax({
+                    url: '{{ route('fetch-product') }}',
+                    type: 'get',
+                    data: {
+                        product_name: product_name
+                    },
+                    success: function(res) {
+                        // console.log(res);
+                        $('#tbody2').html(res.products);
+                    }
+                })
+            };
+
+            $('#product_name').on('keyup', function() {
+                let product_name = $('#product_name').val();
+                fetchProduct(product_name);
+            })
+
+
         });
     </script>
 @endsection

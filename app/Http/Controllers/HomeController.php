@@ -11,15 +11,23 @@ use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         $user = Auth::user();
         if ($user) {
             if ($user->usertype == 0) {
+                $category_name = $request->category_name;
                 $transaction = Transaction::where('user_id', Auth::user()->id)->paginate(2);
-                $products = Product::all();
+                $products = Product::where('category', 'like', "%{$category_name}%")->get();
+
                 $category = Category::all();
-                return view('staff.home', compact('category', 'products', 'transaction'));
+                if ($products->count() > 0) {
+                    return view('staff.home', compact('category', 'products', 'transaction'));
+                } else {
+                    return response()->json([
+                        'status' => 'Nothing found.'
+                    ]);
+                }
             } else {
 
                 $pending = Transaction::where('status', 'pending')->count(); //count of pending
