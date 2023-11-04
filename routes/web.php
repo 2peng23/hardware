@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StaffController;
 use GuzzleHttp\Handler\Proxy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,8 @@ Route::middleware('auth')->group(function () {
     // Can be accessed by admin only
     Route::middleware('adminOnly')->group(function () {
         Route::get('/admin-users', [AdminController::class, 'adminUsers'])->name('admin-users');
+        Route::get('/fetch-users', [AdminController::class, 'fetchUser'])->name('fetch-users');
+        Route::get('/fetch-inactiveUsers', [AdminController::class, 'fetchInactiveUser'])->name('fetch-inactiveUsers');
         Route::post('/add-user', [AdminController::class, 'addUser'])->name('add-user');
         Route::get('/deact-user/{id}', [AdminController::class, 'deactUser'])->name('deact-user');
         Route::get('/activate-user/{id}', [AdminController::class, 'activateUser'])->name('activate-user');
@@ -45,6 +48,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/add-category', [ProductController::class, 'addCategory'])->name('add-category');
 
         // items
+        Route::get('/pagination/paginate-data', [ProductController::class, 'pagination']);
+        Route::get('search-product', [ProductController::class, 'search'])->name('search-product');
         Route::get('/items', [ProductController::class, 'items'])->name('items');
         Route::post('add-product', [ProductController::class, 'addProduct'])->name('add-product');
         Route::get('/edit-product/{id}', [ProductController::class, 'editProduct'])->name('edit-product');
@@ -57,7 +62,13 @@ Route::middleware('auth')->group(function () {
 
         // inventory
         Route::get('inventory', [ProductController::class, 'inventory'])->name('inventory');
+        Route::get('search-inventory', [ProductController::class, 'searchInventory'])->name('search-inventory');
     });
+
+
+    // staff
+    Route::post('add-request', [StaffController::class, 'addRequest'])->name('add-request');
+    Route::get('view-transaction/{id}', [StaffController::class, 'viewTransaction'])->name('view-transaction');
 });
 
 Route::middleware('auth')->group(function () {

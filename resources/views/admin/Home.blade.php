@@ -15,7 +15,8 @@
                                 <i class="fa fa-refresh text-success animate__rotateIn animate__animated infinity "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Number of Customers">On Process (Requests)</h6>
-                            <h3 class="mt-3 mb-3">hello
+                            <h3 class="mt-3 mb-3">
+                                Hello
                             </h3>
                         </div>
                     </div>
@@ -28,7 +29,8 @@
                                 <i class="fa fa-thumbs-up text-primary animate__animated animate__bounceIn "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Number of Orders">New (Requests)</h6>
-                            <h3 class="mt-3 mb-3">hello
+                            <h3 class="mt-3 mb-3">
+                                {{ $pending }}
                             </h3>
                         </div>
                     </div>
@@ -74,22 +76,24 @@
                 </div>
                 <div class="card-body" style="overflow-y: scroll; height: 200px">
                     <table class="table table-striped">
-                        {{-- @foreach (\App\Models\Request::all()->sortByDesc('id') as $request)
-                            <?php
-                            $item = \App\Models\Product::where('id', $request->item_id)->first();
-                            $transaction = \App\Models\Transaction::where('id', $request->transaction_id)->first();
-                            $user = \App\Models\User::where('id', $transaction->user_id)->first();
-                            ?>
-                            <tr>
-                                <td class="text-center">{{ \Carbon\Carbon::parse($request->created_at)->format('M d, Y') }}
-                                </td>
-                                <td class="text-center">{{ $user->name }}</td>
-                                <td class="text-center">{{ $user->designation }}</td>
-                                <td colspan="text-center">{{ $item->name ?? '' }}</td>
-                                <td colspan="text-center">{{ $request->quantity }}</td>
-                            </tr>
-                        @endforeach --}}
+                        <tbody>
+                            @foreach ($transactions as $item)
+                                @php
+                                    $trans_user = $transaction_users->where('id', $item->user_id)->first();
+                                    $trans_item = $transaction_items->where('id', $item->item_id)->first();
+                                @endphp
+                                <tr>
+                                    <td class="text-center">{{ \Carbon\Carbon::parse($item->created_at)->format('M d, Y') }}
+                                    </td>
+                                    <td class="text-center">{{ $trans_user->name ?? '' }}</td>
+                                    <td class="text-center">{{ $trans_user->designation ?? '' }}</td>
+                                    <td class="text-center">{{ $trans_item->name ?? '' }}</td>
+                                    <td class="text-center">{{ $item->quantity }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
                     </table>
+
                 </div>
             </div>
 

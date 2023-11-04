@@ -61,9 +61,17 @@
             <span>Inventory</span></a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('dashboard') }}">
-            <i class="fa fa-fw fa-refresh"></i>
-            <span>Request</span></a>
+        <a class="nav-link d-flex justify-content-between" href="{{ route('dashboard') }}">
+            <div>
+                <i class="fa fa-fw fa-refresh"></i>
+                <span>Request</span>
+            </div>
+            @if ($pending > 0)
+                <p class="rounded-circle text-dark px-2" style="background-color: rgb(231, 216, 216)">
+                    {{ $pending }}
+                </p>
+            @endif
+        </a>
     </li>
     <li class="nav-item {{ request()->routeIs('admin-users') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin-users') }}">

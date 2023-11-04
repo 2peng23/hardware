@@ -42,13 +42,22 @@ class ProductController extends Controller
     public function items(Request $request)
     {
         $products = DB::table('products');
+        $data = Category::all();
+        $products = $products->paginate(10);
+        return view('admin.items', compact('data', 'products'));
+    }
+
+    public function search(Request $request)
+    {
+        $products = DB::table('products');
         $product_name = $request->product_name;
         $product_category = $request->product_category;
 
         // Search Name
         if ($product_name) {
             $products = $products->where(function ($query) use ($product_name) {
-                $query->where('name', 'like', "%{$product_name}%");;
+                $query->where('name', 'like', "%{$product_name}%")
+                    ->orwhere('item_id', 'like', "%{$product_name}%");;
             });
         }
 
@@ -64,7 +73,13 @@ class ProductController extends Controller
 
 
         $data = Category::all();
-        return view('admin.items', compact('data', 'products'));
+        if ($products->count() >= 1) {
+            return view('admin.pagination', compact('data', 'products'))->render();
+        } else {
+            return response()->json([
+                'status' => 'Nothing found.',
+            ]);
+        }
     }
 
     public function addProduct(AddProdcut $request)
@@ -80,7 +95,10 @@ class ProductController extends Controller
             // return response()->json([
             //     'error' => 'Product name already exists!'
             // ]);
-            return redirect()->back()->with('error', 'Product name already exist!');
+            // return redirect()->back()->with('error', 'Product name already exist!');
+            return response()->json([
+                'failed' => 'Product already exist!'
+            ]);
         }
 
         // Create a new product
@@ -95,7 +113,10 @@ class ProductController extends Controller
         // return response()->json([
         //     'success' => 'Product added successfully!'
         // ]);
-        return redirect()->back()->with('message', 'Product successfully added!');
+        // return redirect()->back()->with('message', 'Product successfully added!');
+        return response()->json([
+            'success' => 'Product added successfully!'
+        ]);
     }
 
     public function editProduct($id)
@@ -188,7 +209,22 @@ class ProductController extends Controller
         $products = DB::table('products');
         $product_name = $request->product_name;
         $product_category = $request->product_category;
-        $date_range = $request->daterange;
+        $date_range = $request->date_range;
+
+        // Search Name
+        if ($product_name) {
+            $products = $products->where(function ($query) use ($product_name) {
+                $query->where('name', 'like', "%{$product_name}%")
+                    ->orwhere('item_id', 'like', "%{$product_name}%");;
+            });
+        }
+
+        // Search Category
+        if ($product_category) {
+            $products = $products->where(function ($query) use ($product_category) {
+                $query->where('category', 'like', "%{$product_category}%");;
+            });
+        }
 
         // Search by Date Range
         if ($date_range) {
@@ -197,23 +233,63 @@ class ProductController extends Controller
             $end_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[1])->endOfDay();
             $products = $products->whereBetween('created_at', [$start_date, $end_date]);
         }
-
-        // Search by Name
-        if ($product_name) {
-            $products = $products->where('name', 'like', "%{$product_name}%");
-        }
-
-        // Search by Category
-        if ($product_category) {
-            $products = $products->where('category', 'like', "%{$product_category}%");
-        }
-
-        $products = $products->paginate(10);
+        $products = $products->paginate(2);
         $products->appends(['product_name' => $product_name]); // Add search query to pagination links
         $products->appends(['product_category' => $product_category]); // Add search query to pagination links
-        $products->appends(['daterange' => $date_range]); // Add date range to pagination links
+        $products->appends(['date_range' => $date_range]); // Add search query to pagination links
+
 
         $category = Category::all();
-        return view('admin.inventory', compact('products', 'category', 'product_name', 'date_range'));
+        if ($products->count() > 0) {
+            return view('admin.inventory', compact('products', 'category', 'product_name', 'product_category', 'date_range'));
+        } else {
+            return response()->json([
+                'status' => 'Nothing found.',
+            ]);
+        }
     }
+
+    // public function searchInventory(Request $request)
+    // {
+    //     $products = DB::table('products');
+    //     $product_name = $request->product_name;
+    //     $product_category = $request->product_category;
+    //     $date_range = $request->date_range;
+
+    //     // Search Name
+    //     if ($product_name) {
+    //         $products = $products->where(function ($query) use ($product_name) {
+    //             $query->where('name', 'like', "%{$product_name}%")
+    //                 ->orwhere('item_id', 'like', "%{$product_name}%");;
+    //         });
+    //     }
+
+    //     // Search Category
+    //     if ($product_category) {
+    //         $products = $products->where(function ($query) use ($product_category) {
+    //             $query->where('category', 'like', "%{$product_category}%");;
+    //         });
+    //     }
+
+    //     // Search by Date Range
+    //     if ($date_range) {
+    //         $dateArray = explode(' - ', $date_range);
+    //         $start_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[0])->startOfDay();
+    //         $end_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[1])->endOfDay();
+    //         $products = $products->whereBetween('created_at', [$start_date, $end_date]);
+    //     }
+    //     $products = $products->paginate(10);
+    //     $products->appends(['product_name' => $product_name]); // Add search query to pagination links
+    //     $products->appends(['product_category' => $product_category]); // Add search query to pagination links
+
+
+    //     $data = Category::all();
+    //     if ($products->count() >= 1) {
+    //         return view('admin.inv-pagination', compact('data', 'products'))->render();
+    //     } else {
+    //         return response()->json([
+    //             'status' => 'Nothing found.',
+    //         ]);
+    //     }
+    // }
 }

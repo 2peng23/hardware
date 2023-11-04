@@ -5,32 +5,29 @@
         <x-add-product :data="$data" />
     </div>
     <div class="d-flex justify-content-between mt-4">
-        <form action="{{ url('items') }}" method="GET">
-            @csrf
+        <div>
             <div class="input-group">
-                <input type="text" name="product_name" class="form-control" placeholder='Search item'
-                    oninput="delayedSubmit(this)">
+                <input type="text" name="product_name" class="form-control" placeholder='Search item or code'
+                    id="searchProduct">
                 <div class="input-group-append">
                     <span class="input-group-text"><i class="fa fa-search"></i></span>
                 </div>
             </div>
-        </form>
-        <form action="{{ url('items') }}" method="GET">
-            @csrf
-            <select name="product_category" id="" class="form-select" oninput="delayedSubmit(this)">
+        </div>
+        <div>
+            <select name="product_category" id="productCategory" class="form-select">
                 <option>Select Category</option>
                 <option value="">All Products</option>
                 @foreach ($data as $item)
                     <option value="{{ $item->name }}">{{ $item->name }}</option>
                 @endforeach
             </select>
-        </form>
+        </div>
     </div>
 
     <x-message />
 
-    <x-success-message />
-    <x-error-message />
+    <x-ajax-message />
     <x-edit-product :data=$data />
     <x-edit-stock />
     <x-edit-critical />
@@ -39,7 +36,7 @@
         <p class="mt-5">No products available.</p>
     @else
         {{-- if there are products it will show this --}}
-        <div class="table-responsive mt-5">
+        <div class="table-responsive mt-5" id="table-data">
             <table class="table">
                 <thead>
                     <tr class="text-center">
@@ -97,25 +94,92 @@
             </table>
             {{ $products->links('vendor.pagination.bootstrap-5') }}
         </div>
-
-        {{-- <div id="messageModal" class="messageModal">
-            <!-- Modal content -->
-            <div class="message-modal-content animate__animated animate__bounceIn rounded">
-                <p class="text-success fs-5">This is a pop-up message!</p>
-                <span class="message-close">
-                    <i class="fa fa-check-circle fs-1 text-success animate__zoomIn animate__animated"></i>
-                </span>
-            </div>
-
-        </div> --}}
     @endif
+@endsection
 
 
 
 
-
-
+@section('scripts')
     <script>
+        //search
+        $(document).ready(function() {
+            // by name
+            $(document).on('keyup', '#searchProduct', function(e) {
+                e.preventDefault();
+                let product_name = $('#searchProduct').val();
+                console.log(product_name);
+                $.ajax({
+                    url: '{{ route('search-product') }}',
+                    method: 'GET',
+                    data: {
+                        product_name: product_name
+                    },
+                    success: function(res) {
+                        console.log(res.status);
+                        $('#table-data').html(res)
+                        if (res.status === 'Nothing found.') {
+                            $('#table-data').html('<p>' + res.status + '</p>')
+                        }
+                    }
+                })
+            })
+            // by category
+            $(document).on('change', '#productCategory', function(e) {
+                e.preventDefault();
+                let product_category = $('#productCategory').val();
+                console.log(product_category);
+                $.ajax({
+                    url: '{{ route('search-product') }}',
+                    method: 'GET',
+                    data: {
+                        product_category: product_category
+                    },
+                    success: function(res) {
+                        console.log(res.status);
+                        $('#table-data').html(res)
+                        if (res.status === 'Nothing found.') {
+                            $('#table-data').html('<p>' + res.status + '</p>')
+                        }
+                    }
+                })
+            })
+        })
+        // add product
+        $(document).ready(function() {
+            $(document).on('submit', '#add-product', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/add-product',
+                    data: $('#add-product').serialize(),
+                    type: 'post',
+                    success: function(result) {
+                        console.log(result.success);
+                        $('#ajax-error').css('display', 'none');
+                        $('#ajax-success').css('display', 'block');
+                        $('#ajax-success').html(result.success);
+                        $('#add-product')[0].reset();
+                        $('#exampleModal').modal('hide');
+                        $('.table').load(location.href + ' .table');
+
+                        // Hide success message after 1.5 seconds
+                        setTimeout(function() {
+                            $('#ajax-success').fadeOut('slow');
+                        }, 1500);
+                    },
+                    error: function(xhr, status, error) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorString = '';
+                        $.each(errors, function(key, value) {
+                            errorString += value + '<br>';
+                        });
+                        $('#success-message').css('display', 'none');
+                        $('#error-message').css('display', 'block');
+                        $('#error-message').html(errorString);
+                    }
+                });
+            });
+        });
         let timeoutId;
 
         function delayedSubmit(input) {
@@ -154,11 +218,16 @@
                     type: 'put',
                     success: function(result) {
                         console.log(result.success);
-                        $('#error-message').css('display', 'none');
-                        $('#success-message').css('display', 'block');
-                        $('#success-message').html(result.success);
+                        $('#ajax-error').css('display', 'none');
+                        $('#ajax-success').css('display', 'block');
+                        $('#ajax-success').html(result.success);
                         $('#update-product')[0].reset();
-                        window.location.href = '/items';
+                        $('#editProduct').modal('hide');
+                        $('.table').load(location.href + ' .table');
+                        // Hide success message after 1.5 seconds
+                        setTimeout(function() {
+                            $('#ajax-success').fadeOut('slow');
+                        }, 1500);
                     },
                 });
             });
@@ -167,7 +236,7 @@
         $(document).ready(function() {
             $(document).on('click', '.editbtn', function() {
                 var item_id = $(this).val();
-                $('#editModal').modal('show');
+                $('#editStock').modal('show');
 
                 $.ajax({
                     url: '/edit-stock/' + item_id,
@@ -207,11 +276,16 @@
                     type: 'put',
                     success: function(result) {
                         console.log(result.success);
-                        $('#error-message').css('display', 'none');
-                        $('#success-message').css('display', 'block');
-                        $('#success-message').html(result.success);
+                        $('#ajax-error').css('display', 'none');
+                        $('#ajax-success').css('display', 'block');
+                        $('#ajax-success').html(result.success);
                         $('#add-stock')[0].reset();
-                        window.location.href = '/items';
+                        $('#editStock').modal('hide');
+                        $('.table').load(location.href + ' .table');
+                        // Hide success message after 1.5 seconds
+                        setTimeout(function() {
+                            $('#ajax-success').fadeOut('slow');
+                        }, 1500);
                     },
                     error: function(xhr, status, error) {
                         var errors = xhr.responseJSON.errors;
@@ -246,7 +320,7 @@
             });
         });
 
-        //add stock
+        //add critical-stock
 
         $(document).ready(function() {
             $('#update-critical').submit(function(e) {
@@ -257,11 +331,16 @@
                     type: 'put',
                     success: function(result) {
                         console.log(result.success);
-                        $('#error-message').css('display', 'none');
-                        $('#success-message').css('display', 'block');
-                        $('#success-message').html(result.success);
+                        $('#ajax-error').css('display', 'none');
+                        $('#ajax-success').css('display', 'block');
+                        $('#ajax-success').html(result.success);
                         $('#update-critical')[0].reset();
-                        window.location.href = '/items';
+                        $('#criticalModal').modal('hide');
+                        $('.table').load(location.href + ' .table');
+                        // Hide success message after 1.5 seconds
+                        setTimeout(function() {
+                            $('#ajax-success').fadeOut('slow');
+                        }, 1500);
                     },
                     error: function(xhr, status, error) {
                         var errors = xhr.responseJSON.errors;

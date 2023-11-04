@@ -9,34 +9,31 @@
         <a href="#">
             <i class="fa fa-print rounded-circle text-white bg-secondary p-3" id="print"></i>
         </a>
-        <form id="dateForm" action="{{ url('inventory') }}" method="GET">
-            @csrf
-            <input type="text" name="daterange" id="daterange" class="form-control text-center" style="width: 300px"
-                value="{{ $date_range }}">
-        </form>
+        <input type="text" name="daterange" id="daterange" class="form-control text-center" style="width: 300px"
+            value="{{ $date_range }}">
+
+
     </div>
 
     <div class="d-flex justify-content-between mt-4">
-        <form action="{{ url('inventory') }}" method="GET">
-            @csrf
+        <div>
             <div class="input-group">
-                <input type="text" id="searchInput" name="product_name" value="{{ $product_name }}" class="form-control"
-                    placeholder='Search item' oninput="delayedSubmit(this)">
+                <input type="text" value="{{ $product_name }}" name="product_name" class="form-control"
+                    placeholder='Search item or code' id="searchProduct">
                 <div class="input-group-append">
                     <span class="input-group-text"><i class="fa fa-search"></i></span>
                 </div>
             </div>
-        </form>
-        <form action="{{ url('inventory') }}" method="GET">
-            @csrf
-            <select name="product_category" id="" class="form-select" oninput="delayedSubmit(this)">
+        </div>
+        <div>
+            <select value="{{ $product_category }}" name="product_category" id="productCategory" class="form-select">
                 <option>Select Category</option>
                 <option value="">All Products</option>
                 @foreach ($category as $item)
                     <option value="{{ $item->name }}">{{ $item->name }}</option>
                 @endforeach
             </select>
-        </form>
+        </div>
     </div>
 
     {{-- If product is empty it will show this --}}
@@ -44,7 +41,7 @@
         <p class="mt-5">No products available.</p>
     @else
         {{-- if there are products it will show this --}}
-        <div class="table-responsive mt-1">
+        <div class="table-responsive mt-1" id="table-data2">
             <table class="table" id="inventoryTable">
                 <thead>
                     <tr class="text-center">
@@ -98,28 +95,85 @@
 
 @section('scripts')
     <script>
-        $(function() {
-            $('input[name="daterange"]').daterangepicker({
-                opens: 'left'
-            }, function(start, end, label) {
-                console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end
-                    .format('YYYY-MM-DD'));
-            });
+        //search
+        $(document).ready(function() {
+            // by name
+            $(document).on('keyup', '#searchProduct', function(e) {
+                e.preventDefault();
+                let product_name = $('#searchProduct').val();
+                console.log(product_name);
+                $.ajax({
+                    url: '{{ route('inventory') }}',
+                    method: 'GET',
+                    data: {
+                        product_name: product_name
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#table-data2').html($(response).find('#table-data2')
+                            .html()); // Replace content of #table-data2
+                        if (response.status === 'Nothing found.') {
+                            $('#table-data2').html('<p class="mt-2 text-danger">' + response
+                                .status +
+                                '</p>')
+                        }
+                    }
+                })
+            })
+            // by category
+            $(document).on('change', '#productCategory', function(e) {
+                e.preventDefault();
+                let product_category = $('#productCategory').val();
+                console.log(product_category);
+                $.ajax({
+                    url: '{{ route('inventory') }}',
+                    method: 'GET',
+                    data: {
+                        product_category: product_category
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#table-data2').html($(response).find('#table-data2')
+                            .html()); // Replace content of #table-data2
+                        if (response.status === 'Nothing found.') {
+                            $('#table-data2').html('<p class="mt-2 text-danger">' + response
+                                .status +
+                                '</p>')
+                        }
+                    }
+                })
+            })
+            // by date
+            $(document).on('change', '#daterange', function(e) {
+                e.preventDefault();
+                let date_range = $('#daterange').val();
+                console.log(date_range);
+                $.ajax({
+                    url: '{{ route('inventory') }}',
+                    method: 'GET',
+                    data: {
+                        date_range: date_range
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        $('#table-data2').html($(response).find('#table-data2')
+                            .html()); // Replace content of #table-data2
+                        if (response.status === 'Nothing found.') {
+                            $('#table-data2').html('<p class="mt-2 text-danger">' + response
+                                .status +
+                                '</p>')
+                        }
+                    }
+                })
+            })
+        })
 
-            $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {
-                document.getElementById('dateForm').submit();
-            });
+        // date
+        $('input[name="daterange"]').daterangepicker({
+            opens: 'left'
         });
 
-        // delay submission of form 
-        let timeoutId;
-
-        function delayedSubmit(input) {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                input.form.submit();
-            }, 500);
-        }
+        $('input[name="daterange"]').on('apply.daterangepicker', function(ev, picker) {});
     </script>
 
     {{-- print --}}

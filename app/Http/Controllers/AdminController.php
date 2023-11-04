@@ -12,16 +12,34 @@ class AdminController extends Controller
 {
     public function adminUsers()
     {
+        // $current_user = Auth::user();
+        // $users = User::where('email', '!=', $current_user->email)
+        //     ->where('status', 'active')
+        //     ->get();
+        return view('admin.users');
+    }
+
+    public function fetchUser()
+    {
         $current_user = Auth::user();
         $users = User::where('email', '!=', $current_user->email)
             ->where('status', 'active')
             ->get();
-        return view('admin.users', compact('users'));
+        // return view('admin.users', compact('users'));
+        return response([
+            'users' => $users,
+        ]);
+    }
+    public function fetchInactiveUser()
+    {
+        $users = User::where('status', 'inactive')->get();
+        return response([
+            'users' => $users,
+        ]);
     }
     public function inactiveUser()
     {
-        $inactive = User::where('status', 'inactive')->get();
-        return view('admin.inactive', compact('inactive'));
+        return view('admin.inactive');
     }
     public function addUser(Request $request)
     {
@@ -113,6 +131,7 @@ class AdminController extends Controller
         $user_id = $request->item_id;
         $user = User::find($user_id);
         $user->name = $request->name;
+        $user->designation = $request->designation;
         $user->email = $request->email;
         $user->status = 'active';
         $user->password = $request->password;
