@@ -1,10 +1,11 @@
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center my-3" href="{{ url('dashboard') }}">
-
-        <div class="sidebar-brand-text">Inventory Management System <i class="fa fa-wrench"></i> </div>
-
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fa fa-wrench"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Inventory Management System</div>
     </a>
 
     <!-- Divider -->
@@ -60,23 +61,24 @@
             <i class="fa fa-fw fa-file"></i>
             <span>Inventory</span></a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link d-flex justify-content-between" href="{{ route('dashboard') }}">
-            <div>
-                <i class="fa fa-fw fa-refresh"></i>
-                <span>Request</span>
-            </div>
-            @if ($pending > 0)
-                <p class="rounded-circle text-dark px-2" style="background-color: rgb(231, 216, 216)">
+    <li class="nav-item {{ request()->routeIs('inventory') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('inventory') }}" style="position: relative">
+            <i class="fa fa-fw fa-refresh"></i>
+            <span>Request</span>
+            <span class="rounded-circle text-dark px-2"
+                style="background-color: rgb(231, 216, 216);position:absolute; top:20px; right:20px">
+                @if ($pending > 0)
                     {{ $pending }}
-                </p>
-            @endif
+                @endif
+            </span>
         </a>
     </li>
+
     <li class="nav-item {{ request()->routeIs('admin-users') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('admin-users') }}">
             <i class="fas fa-fw fa-users"></i>
-            <span>User</span></a>
+            <span>User</span>
+        </a>
     </li>
 
     <!-- Sidebar Toggler (Sidebar) -->
@@ -85,4 +87,6 @@
     </div>
 
 </ul>
+
+
 <!-- End of Sidebar -->

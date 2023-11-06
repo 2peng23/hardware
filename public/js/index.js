@@ -11,12 +11,12 @@ function countdown() {
 
         // Disable the button when countdown is not equal to 0
         if (timeLeft !== 0) {
-            loginButton.classList.remove("bg-blue-500", "hover:bg-blue-800");
-            loginButton.classList.add("bg-gray-500", "hover:bg-gray-800");
+            loginButton.classList.remove("bg-gray-800", "hover:bg-gray-700");
+            loginButton.classList.add("bg-gray-300", "hover:bg-gray-500");
             loginButton.disabled = true;
         } else {
-            loginButton.classList.remove("bg-gray-500", "hover:bg-gray-800");
-            loginButton.classList.add("bg-blue-500", "hover:bg-blue-800");
+            loginButton.classList.remove("bg-gray-300", "hover:bg-gray-500");
+            loginButton.classList.add("bg-gray-800", "hover:bg-gray-700");
             loginButton.disabled = false;
         }
     }

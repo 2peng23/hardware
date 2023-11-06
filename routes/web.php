@@ -24,7 +24,7 @@ Route::get('/', function () {
     if (Auth::user()) {
         return redirect('/dashboard');
     }
-    return view('auth.login');
+    return view('auth.login2');
 });
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware('auth')->group(function () {

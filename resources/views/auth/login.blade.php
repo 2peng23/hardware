@@ -57,9 +57,9 @@
                 </a>
             @endif
 
-            <button class="ml-3 bg-blue-500 py-2 px-4 rounded-lg text-white hover:bg-blue-800" id="login-btn">
+            <x-primary-button class="ml-3" id="login-btn">
                 {{ __('Log in') }}
-            </button>
+            </x-primary-button>
         </div>
     </form>
 </x-guest-layout>
