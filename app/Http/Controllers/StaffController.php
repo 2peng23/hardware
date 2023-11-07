@@ -105,8 +105,8 @@ class StaffController extends Controller
                                     ' . csrf_field() . '
                                     <input type="hidden" name="user_id" value="' . auth()->user()->id . '">
                                     <input type="hidden" name="item_id" value="' . $product->id . '">
-                                    <input required type="number" name="quantity" class="form-control" min="1" max="' . $product->quantity . '" ' . ($product->quantity <= 0 ? 'disabled' : '') . '>
-                                    ' . ($product->quantity <= 0 ? '<p class="text-danger">unavailable</p>' : '<button type="submit" class="btn-sm btn btn-success requestbutton">request</button>') . '
+                                    <input required type="number" name="quantity" class="form-control" min="1" max="' . $product->quantity . '" ' . ($product->quantity <= 0 || $product->status == 'unavailable' ? 'disabled' : '') . '>
+                                    ' . ($product->quantity <= 0 || $product->status == 'unavailable' ? '<p class="text-danger">unavailable</p>' : '<button type="submit" class="btn-sm btn btn-success requestbutton">request</button>') . '
                                 </form>
                             </td>
                         </tr>';
