@@ -51,8 +51,9 @@
                                     @endif
                                 </td>
                             </tr>
-                            <tr class="infoTable" style="display: none">
-                                <td colspan="6">
+                            <tr style="display: none" class="infoTable">
+                                <td colspan="6" style="border: 2px solid rgba(82, 73, 73, 0.21)">
+                                    <h4 class="text-center bg-secondary text-white py-2">Transaction Details</h4>
                                     <table class="table table-bordered ">
                                         <thead>
                                             <tr class="text-center">
