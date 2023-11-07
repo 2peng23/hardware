@@ -1,10 +1,11 @@
 <!-- Sidebar -->
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center my-3" href="{{ url('dashboard') }}">
-
-        <div class="sidebar-brand-text">Inventory Management System <i class="fa fa-wrench"></i> </div>
-
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/dashboard">
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fa fa-wrench"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">Inventory Management System</div>
     </a>
 
     <!-- Divider -->
