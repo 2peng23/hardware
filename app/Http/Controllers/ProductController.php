@@ -7,6 +7,7 @@ use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class ProductController extends Controller
 {
     public function categories()
     {
-        $data = Category::paginate(7);
+        $data = Category::paginate(5);
         return view('admin.categories', compact('data'));
     }
     public function addCategory(Request $request)
@@ -41,10 +42,48 @@ class ProductController extends Controller
 
     public function items(Request $request)
     {
-        $products = DB::table('products');
+        $products = DB::table('products')->where('status', 'available');
+        $product_name = $request->product_name;
+        $product_category = $request->product_category;
+        $date_range = $request->date_range;
+
+        // Search Name
+        if ($product_name) {
+            $products = $products->where(function ($query) use ($product_name) {
+                $query->where('name', 'like', "%{$product_name}%")
+                    ->orwhere('item_id', 'like', "%{$product_name}%");;
+            });
+        }
+
+        // Search Category
+        if ($product_category) {
+            $products = $products->where(function ($query) use ($product_category) {
+                $query->where('category', 'like', "%{$product_category}%");;
+            });
+        }
+
+        // Search by Date Range
+        // if ($date_range) {
+        //     $dateArray = explode(' - ', $date_range);
+        //     $start_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[0])->startOfDay();
+        //     $end_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[1])->endOfDay();
+        //     $products = $products->whereBetween('created_at', [$start_date, $end_date]);
+        // }
+        $products = $products->paginate(5);
+        $products->appends(['product_name' => $product_name]); // Add search query to pagination links
+        $products->appends(['product_category' => $product_category]); // Add search query to pagination links
+        // $products->appends(['date_range' => $date_range]); // Add search query to pagination links
+
+
         $data = Category::all();
-        $products = $products->paginate(10);
-        return view('admin.items', compact('data', 'products'));
+        $status = 'Nothing found.';
+        if ($products->count() > 0) {
+            return view('admin.items', compact('products', 'data', 'product_name', 'product_category'));
+        } else {
+            return response()->json([
+                'status' => $status,
+            ]);
+        }
     }
 
     public function search(Request $request)
@@ -140,11 +179,39 @@ class ProductController extends Controller
         ]);
     }
 
-    public function deleteProduct($id)
+    // public function deleteProduct($id)
+    // {
+    //     $product = Product::find($id);
+    //     $product->delete();
+    //     return redirect()->back()->with('error', 'Product Deleted!');
+    // }
+    public function archiveProduct(Request $request)
     {
+        $id = $request->item_id;
         $product = Product::find($id);
-        $product->delete();
-        return redirect()->back()->with('error', 'Product Deleted!');
+        $product->status = 'unavailable';
+        $product->update();
+
+        return response()->json([
+            'success' => 'Product moved to unavailable items!'
+        ]);
+    }
+    public function available(Request $request)
+    {
+        $id = $request->item_id;
+        $product = Product::find($id);
+        $product->status = 'available';
+        $product->update();
+
+        return response()->json([
+            'success' => 'Product moved to available items!'
+        ]);
+    }
+    public function unavailable()
+    {
+        $data = Category::all();
+        $products = Product::where('status', 'unavailable')->paginate(2);
+        return view('admin.unavailable', compact('products', 'data'));
     }
 
 
@@ -233,63 +300,26 @@ class ProductController extends Controller
             $end_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[1])->endOfDay();
             $products = $products->whereBetween('created_at', [$start_date, $end_date]);
         }
-        $products = $products->paginate(2);
+        $products = $products->paginate(5);
         $products->appends(['product_name' => $product_name]); // Add search query to pagination links
         $products->appends(['product_category' => $product_category]); // Add search query to pagination links
         $products->appends(['date_range' => $date_range]); // Add search query to pagination links
 
 
         $category = Category::all();
+        $status = 'Nothing found.';
         if ($products->count() > 0) {
             return view('admin.inventory', compact('products', 'category', 'product_name', 'product_category', 'date_range'));
         } else {
             return response()->json([
-                'status' => 'Nothing found.',
+                'status' => $status,
             ]);
         }
     }
 
-    // public function searchInventory(Request $request)
-    // {
-    //     $products = DB::table('products');
-    //     $product_name = $request->product_name;
-    //     $product_category = $request->product_category;
-    //     $date_range = $request->date_range;
-
-    //     // Search Name
-    //     if ($product_name) {
-    //         $products = $products->where(function ($query) use ($product_name) {
-    //             $query->where('name', 'like', "%{$product_name}%")
-    //                 ->orwhere('item_id', 'like', "%{$product_name}%");;
-    //         });
-    //     }
-
-    //     // Search Category
-    //     if ($product_category) {
-    //         $products = $products->where(function ($query) use ($product_category) {
-    //             $query->where('category', 'like', "%{$product_category}%");;
-    //         });
-    //     }
-
-    //     // Search by Date Range
-    //     if ($date_range) {
-    //         $dateArray = explode(' - ', $date_range);
-    //         $start_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[0])->startOfDay();
-    //         $end_date = \Carbon\Carbon::createFromFormat('m/d/Y', $dateArray[1])->endOfDay();
-    //         $products = $products->whereBetween('created_at', [$start_date, $end_date]);
-    //     }
-    //     $products = $products->paginate(10);
-    //     $products->appends(['product_name' => $product_name]); // Add search query to pagination links
-    //     $products->appends(['product_category' => $product_category]); // Add search query to pagination links
-
-
-    //     $data = Category::all();
-    //     if ($products->count() >= 1) {
-    //         return view('admin.inv-pagination', compact('data', 'products'))->render();
-    //     } else {
-    //         return response()->json([
-    //             'status' => 'Nothing found.',
-    //         ]);
-    //     }
-    // }
+    public function request()
+    {
+        $transaction = Transaction::paginate(5);
+        return view('admin.request', compact('transaction'));
+    }
 }

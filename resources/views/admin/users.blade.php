@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('content')
     <div class="d-flex justify-content-between ">
-        <h3>Users</h3>
+        <h3 class="text-muted">Users</h3>
         <!-- Button trigger modal -->
         <button type="button" style="width: 100px" class="btn btn-primary" data-bs-toggle="modal"
             data-bs-target="#exampleModal">

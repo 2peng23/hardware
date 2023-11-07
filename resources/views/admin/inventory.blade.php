@@ -3,7 +3,7 @@
 
 
 @section('content')
-    <h1>Inventory</h1>
+    <h3 class="text-muted">Inventory</h3>
 
     <div class="d-flex justify-content-between align-items-center mt-2  p-3">
         <a href="#">
@@ -45,6 +45,7 @@
             <table class="table" id="inventoryTable">
                 <thead>
                     <tr class="text-center">
+                        <th></th>
                         <th scope="col" class="text-muted">Item Code</th>
                         <th scope="col" class="text-muted">Item</th>
                         <th scope="col" class="text-muted">Category</th>
@@ -53,37 +54,67 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
-                    @php
-                        $id = 1;
-                    @endphp
                     @foreach ($products as $item)
                         <tr class="text-center">
+                            <td><i class="fa fa-angle-right show-info"></i></td>
                             <td>{{ $item->item_id }}</td>
                             <td>{{ $item->name }}</td>
-                            <td>
-                                {{ $item->category }}
-                            </td>
+                            <td>{{ $item->category }}</td>
                             <td>{{ $item->quantity }}</td>
                             <td style="width: 120px">
                                 @if ($item->quantity <= 0)
                                     <p style="background-color: rgb(231, 198, 191); font-size:12px;"
-                                        class='rounded  mx-auto text-danger py-1'>
-                                        Unavailable</p>
+                                        class='rounded  mx-auto text-danger py-1'>Unavailable</p>
                                 @elseif($item->quantity <= $item->critical_stock)
                                     <p style="background-color: rgb(231, 230, 191); font-size:12px;"
                                         class='rounded  mx-auto text-warning py-1'>Critical</p>
                                 @else
                                     <p style="background-color: rgb(192, 231, 191); font-size:12px;"
-                                        class='rounded  mx-auto text-success py-1'>
-                                        Available</p>
+                                        class='rounded  mx-auto text-success py-1'>Available</p>
                                 @endif
                             </td>
                         </tr>
-                        @php
-                            $id++;
-                        @endphp
+                        <tr style="display: none" class="infoTable">
+                            <td colspan="6" style="border: 2px solid rgba(82, 73, 73, 0.21)">
+                                <h4 class="text-center bg-secondary text-white py-2">Stock Card</h4>
+
+
+                                <table class="table">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th>Date</th>
+                                            <th>Item</th>
+                                            <th>Quantity Delivered</th>
+                                            <th>Beginning Balance</th>
+                                            <th>Issued</th>
+                                            <th>Ending Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $stocks = App\Models\Stock::where('item_id', $item->id)
+                                                ->orderBy('created_at', 'desc')
+                                                ->get();
+                                        @endphp
+                                        @foreach ($stocks as $stock)
+                                            <tr class="text-center">
+                                                <td class="text-muted">
+                                                    {{ \Carbon\Carbon::parse($stock->created_at)->format('M d, Y') }}</td>
+                                                <td>{{ $item->name }}</td>
+                                                <td>{{ $stock->quantity }}</td>
+                                                <td>{{ $stock->beginning_balance }}</td>
+                                                <td>{{ $stock->issued }}</td>
+                                                <td>{{ $stock->ending_balance }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
+
             </table>
             {{ $products->links('vendor.pagination.bootstrap-5') }}
         </div>
@@ -97,6 +128,24 @@
     <script>
         //search
         $(document).ready(function() {
+
+            // Define a function for handling the toggle event
+            function handleToggleInfo() {
+                $('.show-info').on('click', function() {
+                    var info_table = $(this).closest('tr').next('.infoTable');
+                    var toggle_icon = $(this);
+                    if (info_table.css('display') == 'none') {
+                        info_table.fadeIn();
+                        toggle_icon.removeClass('fa-angle-right').addClass('fa-angle-down');
+                    } else {
+                        info_table.hide();
+                        toggle_icon.removeClass('fa-angle-down').addClass('fa-angle-right');
+                    }
+                });
+            }
+
+            // Call the function on document ready
+            handleToggleInfo();
             // by name
             $(document).on('keyup', '#searchProduct', function(e) {
                 e.preventDefault();
@@ -112,6 +161,7 @@
                         console.log(response);
                         $('#table-data2').html($(response).find('#table-data2')
                             .html()); // Replace content of #table-data2
+                        handleToggleInfo();
                         if (response.status === 'Nothing found.') {
                             $('#table-data2').html('<p class="mt-2 text-danger">' + response
                                 .status +
@@ -179,8 +229,8 @@
     {{-- print --}}
     <script>
         document.getElementById('print').addEventListener('click', function() {
-            let title = document.querySelector('h1').innerText;
-            let printContents = '<h1>' + title + '</h1>' + document.getElementById('inventoryTable').outerHTML;
+            let title = document.querySelector('h3').innerText;
+            let printContents = '<h3>' + title + '</h3>' + document.getElementById('inventoryTable').outerHTML;
             let originalContents = document.body.innerHTML;
             document.body.innerHTML = printContents;
             window.print();

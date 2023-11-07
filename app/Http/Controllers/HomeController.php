@@ -17,17 +17,17 @@ class HomeController extends Controller
         if ($user) {
             if ($user->usertype == 0) {
                 $category_name = $request->category_name;
-                $transaction = Transaction::where('user_id', Auth::user()->id)->paginate(2);
-                $products = Product::where('category', 'like', "%{$category_name}%")->get();
+                $transaction = Transaction::where('user_id', Auth::user()->id)->paginate(5);
+                $products = Product::all();
 
                 $category = Category::all();
-                if ($products->count() > 0) {
-                    return view('staff.home', compact('category', 'products', 'transaction'));
-                } else {
-                    return response()->json([
-                        'status' => 'Nothing found.'
-                    ]);
-                }
+                return view('staff.home', compact('category', 'products', 'transaction'));
+                // if ($products->count() > 0) {
+                // } else {
+                //     return response()->json([
+                //         'status' => 'Nothing found.'
+                //     ]);
+                // }
             } else {
 
                 $pending = Transaction::where('status', 'pending')->count(); //count of pending

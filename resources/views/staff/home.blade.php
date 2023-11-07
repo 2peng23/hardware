@@ -139,11 +139,13 @@
                     type: 'post',
                     success: function(result) {
                         if (result.success) {
-                            $('#ajax-success').css('display', 'block');
-                            $('#ajax-success').html(result.success);
+                            $('#success').css('display', 'block');
+                            $('#success').html('<i class="fa fa-exclamation-triangle"></i>  ' + result
+                                .success);
                         } else {
-                            $('#ajax-error').css('display', 'block');
-                            $('#ajax-error').html(result.failed);
+                            $('#failed').css('display', 'block');
+                            $('#failed').html('<i class="fa fa-exclamation-triangle"></i>  ' + result
+                                .failed);
                         }
                         form[0].reset();
                         // $('#request-modal').modal('hide');
@@ -155,8 +157,8 @@
 
                         // Hide success message after 1.5 seconds
                         setTimeout(function() {
-                            $('#ajax-success').fadeOut('slow');
-                            $('#ajax-error').fadeOut('slow');
+                            $('#success').fadeOut('slow');
+                            $('#failed').fadeOut('slow');
                         }, 2000); //2 seconds
                     },
                     error: function(xhr, status, error) {
@@ -166,9 +168,9 @@
                         $.each(errors, function(key, value) {
                             errorString += value + '<br>';
                         });
-                        $('#ajax-success').hide();
-                        $('#ajax-error').show();
-                        $('#ajax-error').html(errorString);
+                        $('#success').hide();
+                        $('#failed').show();
+                        $('#failed').html(errorString);
                     }
                 });
             }

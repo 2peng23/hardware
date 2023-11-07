@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Stock;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +26,12 @@ class StaffController extends Controller
         if ($request->quantity == 0 || $request->quantity == '') {
             return response()->json([
                 'failed' => 'Please put some value!'
+            ]);
+        }
+        $transaction_item = Product::where('id', $request->item_id)->first();
+        if ($transaction_item->quantity < $request->quantity) {
+            return response()->json([
+                'failed' => "Please put valid quantity based on available stock!"
             ]);
         }
 
@@ -79,9 +86,10 @@ class StaffController extends Controller
             $products = DB::table('products')
                 ->where('name', 'like', "%{$product_name}%")
                 ->orWhere('category', 'like', "%{$product_name}%")
+                ->orderByDesc('quantity')
                 ->get();
         } else {
-            $products = DB::table('products')->get();
+            $products = DB::table('products')->orderByDesc('quantity')->get();
         }
 
         $total_row = $products->count();
@@ -111,6 +119,57 @@ class StaffController extends Controller
 
         return response()->json([
             'products' => $output
+        ]);
+    }
+
+    public function accept(Request $request)
+    {
+        $id = $request->id;
+        $trans = Transaction::find($id);
+
+        $trans->status = 'approved';
+        $trans->update();
+
+        return response()->json([
+            'success' => 'Transaction Accepted'
+        ]);
+    }
+    public function decline(Request $request)
+    {
+        $id = $request->id;
+        $trans = Transaction::find($id);
+        $trans->status = 'declined';
+        $trans->update();
+
+        return response()->json([
+            'success' => 'Transaction Declined!'
+        ]);
+    }
+    public function release(Request $request)
+    {
+        $id = $request->id;
+        $trans = Transaction::find($id);
+        $product = Product::find($trans->item_id);
+
+        // $stock = Stock::find($product->id);
+        $stock = new Stock();
+        $stock->item_id = $product->id;
+        $stock->quantity = 0;
+        $stock->issued = $trans->quantity;
+        $stock->beginning_balance = $product->quantity;
+        $stock->ending_balance = $product->quantity - $trans->quantity;
+        $stock->supplier = '';
+        $stock->save();
+
+
+        $ending_balance = $product->quantity - $trans->quantity;
+        $product->quantity = $ending_balance;
+        $product->update();
+        $trans->status = 'released';
+        $trans->update();
+
+        return response()->json([
+            'success' => 'Transaction Released!'
         ]);
     }
 }

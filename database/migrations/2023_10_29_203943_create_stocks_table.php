@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('quantity');
             $table->string('beginning_balance');
             $table->string('ending_balance')->default(0);
+            $table->string('issued')->default(0);
             $table->string('supplier');
             $table->timestamps();
         });

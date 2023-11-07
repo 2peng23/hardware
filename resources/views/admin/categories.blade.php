@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('content')
     <div class="d-flex justify-content-between">
-        <h1>Categories</h1>
+        <h3 class="text-muted">Categories</h3>
         <x-add-category />
         <x-success-message />
         <x-error-message />

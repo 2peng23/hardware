@@ -17,7 +17,11 @@
                     </div>
                 </div> --}}
                 <div class="alert alert-info">
-                    <i class="uil-info-circle"></i> Input quantity of item(s) you want to request.
+                    <i class="fa fa-info-circle text-dark"></i> Input quantity of item(s) you want to request.
+                </div>
+                <div class="alert alert-danger" id="failed" style="display: none;">
+                </div>
+                <div class="alert alert-success" id="success" style="display: none;">
                 </div>
                 <div class="d-flex justify-content-end py-2">
                     <div>
@@ -31,7 +35,7 @@
                             <tr class="text-center">
                                 <th>Item Name</th>
                                 <th>Category</th>
-                                <th>Stock</th>
+                                <th>Available Stock</th>
                                 <th>Quantity</th>
                             </tr>
 

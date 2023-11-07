@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('price');
             $table->string('quantity')->default(0);
             $table->string('category');
+            $table->string('status')->default('available');
             $table->string('critical_stock')->default(0);
             $table->timestamps();
         });

@@ -61,8 +61,8 @@
             <i class="fa fa-fw fa-file"></i>
             <span>Inventory</span></a>
     </li>
-    <li class="nav-item {{ request()->routeIs('inventory') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('inventory') }}" style="position: relative">
+    <li class="nav-item {{ request()->routeIs('request') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('request') }}" style="position: relative">
             <i class="fa fa-fw fa-refresh"></i>
             <span>Request</span>
             <span class="rounded-circle text-dark px-2"

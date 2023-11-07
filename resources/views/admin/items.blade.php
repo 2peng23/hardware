@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 @section('content')
     <div class="d-flex justify-content-between ">
-        <h1>Supplies</h1>
+        <h3 class="text-muted">Supplies</h3>
         <x-add-product :data="$data" />
     </div>
     <div class="d-flex justify-content-between mt-4">
@@ -24,6 +24,11 @@
             </select>
         </div>
     </div>
+    <div class="d-flex justify-content-end pt-4">
+        <button class="btn btn-sm btn-warning unavailable">
+            <i class="fa fa-archive fs-2 text-white"></i>
+        </button>
+    </div>
 
     <x-message />
 
@@ -32,69 +37,99 @@
     <x-edit-stock />
     <x-edit-critical />
     {{-- If product is empty it will show this --}}
-    @if ($products->isEmpty())
-        <p class="mt-5">No products available.</p>
-    @else
-        {{-- if there are products it will show this --}}
-        <div class="table-responsive mt-5" id="table-data">
-            <table class="table">
-                <thead>
-                    <tr class="text-center">
-                        <th scope="col">Item Code</th>
-                        <th scope="col">Item</th>
-                        <th scope="col">Category</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Stock</th>
-                        <th scope="col">Critical Stock</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $id = 1;
-                    @endphp
-                    @foreach ($products as $item)
+    <div id="table-data2">
+        @if ($products->isEmpty())
+            <p class="mt-2">No products available.</p>
+        @else
+            {{-- if there are products it will show this --}}
+            <div class="table-responsive mt-2">
+                <table class="table table3">
+                    <thead>
                         <tr class="text-center">
-                            <th scope="row">{{ $item->item_id }}</th>
-                            <td>{{ $item->name }}</td>
-                            <td>
-                                {{ $item->category }}
-                            </td>
-                            <td>{{ $item->price }}</td>
-                            <td>
-                                <button value="{{ $item->id }}" class="text-primary btn rounded p-0 editbtn">
-                                    {{ $item->quantity }}
-                                </button>
-                            </td>
-
-                            <td>
-                                <button value="{{ $item->id }}" class="text-primary btn rounded p-0 criticalbtn">
-                                    {{ $item->critical_stock }}
-                                </button>
-                            </td>
-                            <td>
-                                <div class="d-flex justify-content-center gap-1">
-                                    <button value="{{ $item->id }}"
-                                        class="btn-success btn-sm btn text-white rounded-lg editProduct">
-                                        <i class="fa fa-pencil px-1 "></i>
+                            <th scope="col">Item Code</th>
+                            <th scope="col">Item</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Critical Stock</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $id = 1;
+                        @endphp
+                        @foreach ($products as $item)
+                            <tr class="text-center">
+                                <th scope="row">{{ $item->item_id }}</th>
+                                <td>{{ $item->name }}</td>
+                                <td>
+                                    {{ $item->category }}
+                                </td>
+                                <td>{{ $item->price }}</td>
+                                <td>
+                                    <button value="{{ $item->id }}" class="text-primary btn rounded p-0 editbtn">
+                                        {{ $item->quantity }}
                                     </button>
-                                    <a href="{{ route('delete-product', $item->id) }}"
+                                </td>
+
+                                <td>
+                                    <button value="{{ $item->id }}" class="text-primary btn rounded p-0 criticalbtn">
+                                        {{ $item->critical_stock }}
+                                    </button>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <button value="{{ $item->id }}"
+                                            class="btn-success btn-sm btn text-white rounded-lg editProduct">
+                                            <i class="fa fa-pencil px-1 "></i>
+                                        </button>
+                                        {{-- <a href="{{ route('delete-product', $item->id) }}"
                                         onclick="return confirm('Are you sure you want to delete this product?')"
                                         class="bg-danger btn btn-danger btn-sm text-white rounded-lg">
                                         <i class="fa fa-trash px-1"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        @php
-                            $id++;
-                        @endphp
-                    @endforeach
-                </tbody>
-            </table>
-            {{ $products->links('vendor.pagination.bootstrap-5') }}
-        </div>
-    @endif
+                                    </a> --}}
+                                        <!-- Button trigger modal -->
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#archive">
+                                            <i class="fa fa-archive text-white"></i>
+                                        </button>
+
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="archive" tabindex="-1"
+                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5" id="exampleModalLabel">
+                                                            <i class="fa fa-archive text-warning"></i>
+                                                        </h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p class="fs-3">Make this product unavailable?</p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button value="{{ $item->id }}" type="button"
+                                                            class="btn btn-success btn-archive">Confirm</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            @php
+                                $id++;
+                            @endphp
+                        @endforeach
+                    </tbody>
+                </table>
+                {{ $products->links('vendor.pagination.bootstrap-5') }}
+            </div>
+        @endif
+    </div>
 @endsection
 
 
@@ -110,16 +145,19 @@
                 let product_name = $('#searchProduct').val();
                 console.log(product_name);
                 $.ajax({
-                    url: '{{ route('search-product') }}',
+                    url: '{{ route('items') }}',
                     method: 'GET',
                     data: {
                         product_name: product_name
                     },
-                    success: function(res) {
-                        console.log(res.status);
-                        $('#table-data').html(res)
-                        if (res.status === 'Nothing found.') {
-                            $('#table-data').html('<p>' + res.status + '</p>')
+                    success: function(response) {
+                        console.log(response);
+                        $('#table-data2').html($(response).find('#table-data2')
+                            .html()); // Replace content of #table-data2
+                        if (response.status === 'Nothing found.') {
+                            $('#table-data2').html('<p class="mt-2 text-danger">' + response
+                                .status +
+                                '</p>')
                         }
                     }
                 })
@@ -130,16 +168,19 @@
                 let product_category = $('#productCategory').val();
                 console.log(product_category);
                 $.ajax({
-                    url: '{{ route('search-product') }}',
+                    url: '{{ route('items') }}',
                     method: 'GET',
                     data: {
                         product_category: product_category
                     },
-                    success: function(res) {
-                        console.log(res.status);
-                        $('#table-data').html(res)
-                        if (res.status === 'Nothing found.') {
-                            $('#table-data').html('<p>' + res.status + '</p>')
+                    success: function(response) {
+                        console.log(response);
+                        $('#table-data2').html($(response).find('#table-data2')
+                            .html()); // Replace content of #table-data2
+                        if (response.status === 'Nothing found.') {
+                            $('#table-data2').html('<p class="mt-2 text-danger">' + response
+                                .status +
+                                '</p>')
                         }
                     }
                 })
@@ -160,7 +201,7 @@
                         $('#ajax-success').html(result.success);
                         $('#add-product')[0].reset();
                         $('#exampleModal').modal('hide');
-                        $('.table').load(location.href + ' .table');
+                        $('#table-data2').load(location.href + ' #table-data2');
 
                         // Hide success message after 1.5 seconds
                         setTimeout(function() {
@@ -223,7 +264,7 @@
                         $('#ajax-success').html(result.success);
                         $('#update-product')[0].reset();
                         $('#editProduct').modal('hide');
-                        $('.table').load(location.href + ' .table');
+                        $('#table-data2').load(location.href + ' #table-data2');
                         // Hide success message after 1.5 seconds
                         setTimeout(function() {
                             $('#ajax-success').fadeOut('slow');
@@ -281,7 +322,7 @@
                         $('#ajax-success').html(result.success);
                         $('#add-stock')[0].reset();
                         $('#editStock').modal('hide');
-                        $('.table').load(location.href + ' .table');
+                        $('#table-data2').load(location.href + ' #table-data2');
                         // Hide success message after 1.5 seconds
                         setTimeout(function() {
                             $('#ajax-success').fadeOut('slow');
@@ -336,7 +377,7 @@
                         $('#ajax-success').html(result.success);
                         $('#update-critical')[0].reset();
                         $('#criticalModal').modal('hide');
-                        $('.table').load(location.href + ' .table');
+                        $('#table-data2').load(location.href + ' #table-data2');
                         // Hide success message after 1.5 seconds
                         setTimeout(function() {
                             $('#ajax-success').fadeOut('slow');
@@ -353,6 +394,38 @@
                         $('#error-message').html(errorString);
                     }
                 });
+            });
+        });
+
+        // make product unavailable
+        $(document).ready(function() {
+            $('#table-data2').on('click', '.btn-archive', function() {
+                var item_id = $(this).val();
+                console.log(item_id);
+                $.ajax({
+                    url: "{{ route('archive-product') }}",
+                    type: 'GET',
+                    data: {
+                        item_id: item_id
+                    },
+                    success: function(result) {
+                        console.log(result.success);
+                        $('#ajax-error').css('display', 'none');
+                        $('#ajax-success').css('display', 'block');
+                        $('#ajax-success').html(result.success);
+                        $('#archive').modal('hide');
+                        $('#table-data2').load(location.href + ' #table-data2');
+                        // Hide success message after 1.5 seconds
+                        setTimeout(function() {
+                            $('#ajax-success').fadeOut('slow');
+                        }, 1500);
+                    },
+                });
+            });
+
+            $('.unavailable').on('click', function(e) {
+                e.preventDefault();
+                window.location.href = "{{ route('unavailable') }}"
             });
         });
     </script>

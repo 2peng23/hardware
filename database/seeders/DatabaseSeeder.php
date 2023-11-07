@@ -27,5 +27,15 @@ class DatabaseSeeder extends Seeder
             'usertype' => 1,
             'email' => 'admin@admin.com',
         ]);
+        \App\Models\Product::create([
+            'item_id' => 0001,
+            'name' => 'Paint',
+            'price' => 50,
+            'category' => 'Electrical',
+        ]);
+        \App\Models\Category::create([
+            'name' => 'Electrical',
+            'image' => '1699357859.jfif',
+        ]);
     }
 }

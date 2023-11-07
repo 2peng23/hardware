@@ -16,7 +16,10 @@
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Number of Customers">On Process (Requests)</h6>
                             <h3 class="mt-3 mb-3">
-                                Hello
+                                @php
+                                    $process = App\Models\Transaction::where('status', 'approved')->count();
+                                @endphp
+                                {{ $process }}
                             </h3>
                         </div>
                     </div>
@@ -45,7 +48,11 @@
                                 <i class="fa fa-thumbs-down text-danger animate__animated animate__bounceIn "></i>
                             </div>
                             <h6 class="text-muted fw-normal mt-0" title="Average Revenue">Declined (Requests)</h6>
-                            <h3 class="mt-3 mb-3">hello
+                            <h3 class="mt-3 mb-3">
+                                @php
+                                    $decline = App\Models\Transaction::where('status', 'declined')->count();
+                                @endphp
+                                {{ $decline }}
                             </h3>
                         </div>
                     </div>
@@ -60,7 +67,10 @@
                             <h6 class="text-muted fw-normal mt-0" title="Growth">Released (Requests)</h6>
                             <h3 class="mt-3 mb-3">
                                 {{-- {{ count(\App\Models\Transaction::where('status', 'Released')->get()) }} --}}
-                                hello
+                                @php
+                                    $release = App\Models\Transaction::where('status', 'released')->count();
+                                @endphp
+                                {{ $release }}
                             </h3>
                         </div>
                     </div>
@@ -130,7 +140,7 @@
         <div class="col-sm-12 col-md-6 col-lg-6">
             <div class="card">
                 <div class="card-header">
-                    <h5 class="card-title">Products Unavailable</h5>
+                    <h5 class="card-title">Out of Stock</h5>
                 </div>
                 <div class="card-body" style="overflow-y: scroll; height: 200px">
                     <table class="table table-striped">
