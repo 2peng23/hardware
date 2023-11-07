@@ -93,9 +93,9 @@
                                 <label class="cursor-pointer select-none"
                                     for="remember-me">{{ __('Remember me') }}</label>
                             </div>
-                            @if (Route::has('password.request'))
+                            {{-- @if (Route::has('password.request'))
                                 <a href="{{ route('password.request') }}">{{ __('Forgot your password?') }}</a>
-                            @endif
+                            @endif --}}
                         </div>
                         <div class=" mt-5 xl:mt-8 text-center xl:text-left">
                             <button class="btn btn-primary py-3 px-4 w-full xl:w-32 xl:mr-3 align-top" type="submit"
