@@ -35,6 +35,7 @@
                         <th class="text-center">Transaction ID</th>
                         <th class="text-center">Requestor</th>
                         <th class="text-center">Office</th>
+                        <th class="text-center">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,17 +46,35 @@
                             <td class="text-muted">{{ $item->transaction_id }}</td>
                             <td class="text-muted">{{ Auth::user()->name }}</td>
                             <td class="text-muted">{{ Auth::user()->designation }}</td>
+                            <td class="text-muted">
+                                @if ($item->status == 'declined')
+                                    <p style="background-color: rgb(231, 198, 191); font-size:12px;"
+                                        class='rounded  mx-auto text-danger p-1'>
+                                        {{ $item->status }}</p>
+                                @elseif($item->status == 'pending')
+                                    <p style="background-color: rgb(231, 230, 191); font-size:12px;"
+                                        class='rounded  mx-auto text-warning p-1'>{{ $item->status }}</p>
+                                @elseif($item->status == 'approved')
+                                    <p style="background-color: rgb(192, 231, 191); font-size:12px;"
+                                        class='rounded  mx-auto text-success p-1'>
+                                        on-process</p>
+                                @else
+                                    <p style="background-color: rgb(191, 220, 231); font-size:12px;"
+                                        class='rounded  mx-auto text-primary p-1'>
+                                        {{ $item->status }}</p>
+                                @endif
+                            </td>
 
                         </tr>
-                        <tr class="info-table" style="display: none">
-                            <td colspan="5">
+                        <tr style="display: none" class="info-table">
+                            <td colspan="6" style="border: 2px solid rgba(82, 73, 73, 0.21)">
+                                <h4 class="text-center bg-secondary text-white py-2">Transaction Details</h4>
                                 <table class="table table-bordered">
                                     <thead class="text-center ">
                                         <tr>
                                             <th>Item</th>
                                             <th>Category</th>
                                             <th>Quantity</th>
-                                            <th class="text-center">Status</th>
 
                                         </tr>
                                     </thead>
@@ -67,24 +86,7 @@
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->category }}</td>
                                             <td>{{ $item->quantity }}</td>
-                                            <td class="text-muted">
-                                                @if ($item->status == 'declined')
-                                                    <p style="background-color: rgb(231, 198, 191); font-size:12px;"
-                                                        class='rounded  mx-auto text-danger p-1'>
-                                                        {{ $item->status }}</p>
-                                                @elseif($item->status == 'pending')
-                                                    <p style="background-color: rgb(231, 230, 191); font-size:12px;"
-                                                        class='rounded  mx-auto text-warning p-1'>{{ $item->status }}</p>
-                                                @elseif($item->status == 'approved')
-                                                    <p style="background-color: rgb(192, 231, 191); font-size:12px;"
-                                                        class='rounded  mx-auto text-success p-1'>
-                                                        on-process</p>
-                                                @else
-                                                    <p style="background-color: rgb(191, 220, 231); font-size:12px;"
-                                                        class='rounded  mx-auto text-primary p-1'>
-                                                        {{ $item->status }}</p>
-                                                @endif
-                                            </td>
+
                                         </tr>
 
                                     </tbody>
