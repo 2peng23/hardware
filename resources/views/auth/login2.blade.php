@@ -54,7 +54,7 @@
                     <h2 class=" font-bold text-2xl xl:text-3xl text-center xl:text-left">
                         Sign In
                     </h2>
-                    <div class="intro-x mt-2 text-slate-400 xl:hidden text-center">A few more clicks to sign in to your
+                    <div class="intro-x mt-2 text-slate-400 xl:hidden text-center">Hello more clicks to sign in to your
                         account. <br> Web-Based Hardware
                         Inventory
                         Management System</div>
