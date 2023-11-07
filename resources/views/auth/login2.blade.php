@@ -43,7 +43,7 @@
                     </div>
                     <div class="-intro-x mt-5 text-lg text-white text-opacity-70 dark:text-slate-400">Web-Based Hardware
                         Inventory
-                        Management System PUP</div>
+                        Management System</div>
                 </div>
             </div>
             <!-- END: Login Info -->
