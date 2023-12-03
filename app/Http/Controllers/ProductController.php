@@ -319,7 +319,7 @@ class ProductController extends Controller
 
     public function request()
     {
-        $transaction = Transaction::paginate(5);
+        $transaction = Transaction::paginate(5)->orderBy('updated_at', 'desc');
         return view('admin.request', compact('transaction'));
     }
 }
