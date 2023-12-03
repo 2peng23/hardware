@@ -31,11 +31,11 @@
                         <input readonly name="ending_balance" value="" class="form-control" id="ending_balance">
                     </div>
 
-                    <div class="mb-3">
+                    {{-- <div class="mb-3">
                         <label for="supplier" class="form-label">Supplier</label>
                         <input type="text" name="supplier" placeholder="Enter supplier name" class="form-control"
                             id="supplier" required>
-                    </div>
+                    </div> --}}
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Restock </button>

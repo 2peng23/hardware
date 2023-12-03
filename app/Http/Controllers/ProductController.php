@@ -243,7 +243,7 @@ class ProductController extends Controller
         $stock->beginning_balance =  $request->beginning_balance;
         $stock->ending_balance =  $request->ending_balance;
         $stock->quantity = $request->quantity;
-        $stock->supplier = $request->supplier;
+        // $stock->supplier = $request->supplier;
         $stock->save();
 
         return response()->json([
