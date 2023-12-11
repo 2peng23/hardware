@@ -14,7 +14,7 @@
         @endphp
         @foreach ($products as $item)
             <tr class="text-center">
-                <td>{{ $item->item_id }}</td>
+                <td>{{ $item->barcode }}</td>
                 <td>{{ $item->name }}</td>
                 <td>
                     {{ $item->category }}

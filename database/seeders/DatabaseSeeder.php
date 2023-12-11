@@ -27,7 +27,9 @@ class DatabaseSeeder extends Seeder
             'usertype' => 1,
             'email' => 'admin@admin.com',
         ]);
+        $barcodeGenerator = mt_rand(100000000000, 999999999999);
         \App\Models\Product::create([
+            'barcode' => $barcodeGenerator,
             'item_id' => 0001,
             'name' => 'Paint',
             'price' => 50,

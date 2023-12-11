@@ -57,7 +57,7 @@
                     @foreach ($products as $item)
                         <tr class="text-center">
                             <td><i class="fa fa-angle-right show-info"></i></td>
-                            <td>{{ $item->item_id }}</td>
+                            <td>{{ $item->barcode }}</td>
                             <td>{{ $item->name }}</td>
                             <td>{{ $item->category }}</td>
                             <td>{{ $item->quantity }}</td>

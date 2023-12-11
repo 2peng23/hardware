@@ -83,6 +83,7 @@ Route::middleware('auth')->group(function () {
     Route::post('add-request', [StaffController::class, 'addRequest'])->name('add-request');
     Route::get('view-transaction/{id}', [StaffController::class, 'viewTransaction'])->name('view-transaction');
     Route::get('fetch-product', [StaffController::class, 'fetchProduct'])->name('fetch-product');
+    Route::get('point-of-sale', [StaffController::class, 'pointOfSale'])->name('point-of-sale');
 });
 
 Route::middleware('auth')->group(function () {

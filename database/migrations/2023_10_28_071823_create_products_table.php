@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('item_id');
             $table->string('name');
+            $table->string('barcode')->nullable();
             $table->string('price');
             $table->string('quantity')->default(0);
             $table->string('category');

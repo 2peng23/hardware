@@ -172,4 +172,11 @@ class StaffController extends Controller
             'success' => 'Transaction Released!'
         ]);
     }
+
+    // POS
+    public function pointOfSale()
+    {
+        $items = Product::all();
+        return view('staff.pos', compact('items'));
+    }
 }

@@ -51,7 +51,7 @@ class ProductController extends Controller
         if ($product_name) {
             $products = $products->where(function ($query) use ($product_name) {
                 $query->where('name', 'like', "%{$product_name}%")
-                    ->orwhere('item_id', 'like', "%{$product_name}%");;
+                    ->orwhere('barcode', 'like', "%{$product_name}%");;
             });
         }
 
@@ -86,40 +86,40 @@ class ProductController extends Controller
         }
     }
 
-    public function search(Request $request)
-    {
-        $products = DB::table('products');
-        $product_name = $request->product_name;
-        $product_category = $request->product_category;
+    // public function search(Request $request)
+    // {
+    //     $products = DB::table('products');
+    //     $product_name = $request->product_name;
+    //     $product_category = $request->product_category;
 
-        // Search Name
-        if ($product_name) {
-            $products = $products->where(function ($query) use ($product_name) {
-                $query->where('name', 'like', "%{$product_name}%")
-                    ->orwhere('item_id', 'like', "%{$product_name}%");;
-            });
-        }
+    //     // Search Name
+    //     if ($product_name) {
+    //         $products = $products->where(function ($query) use ($product_name) {
+    //             $query->where('name', 'like', "%{$product_name}%")
+    //                 ->orwhere('barcode', 'like', "%{$product_name}%");;
+    //         });
+    //     }
 
-        // Search Category
-        if ($product_category) {
-            $products = $products->where(function ($query) use ($product_category) {
-                $query->where('category', 'like', "%{$product_category}%");;
-            });
-        }
-        $products = $products->paginate(10);
-        $products->appends(['product_name' => $product_name]); // Add search query to pagination links
-        $products->appends(['product_category' => $product_category]); // Add search query to pagination links
+    //     // Search Category
+    //     if ($product_category) {
+    //         $products = $products->where(function ($query) use ($product_category) {
+    //             $query->where('category', 'like', "%{$product_category}%");;
+    //         });
+    //     }
+    //     $products = $products->paginate(10);
+    //     $products->appends(['product_name' => $product_name]); // Add search query to pagination links
+    //     $products->appends(['product_category' => $product_category]); // Add search query to pagination links
 
 
-        $data = Category::all();
-        if ($products->count() >= 1) {
-            return view('admin.pagination', compact('data', 'products'))->render();
-        } else {
-            return response()->json([
-                'status' => 'Nothing found.',
-            ]);
-        }
-    }
+    //     $data = Category::all();
+    //     if ($products->count() >= 1) {
+    //         return view('admin.pagination', compact('data', 'products'))->render();
+    //     } else {
+    //         return response()->json([
+    //             'status' => 'Nothing found.',
+    //         ]);
+    //     }
+    // }
 
     public function addProduct(AddProdcut $request)
     {
@@ -147,7 +147,15 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->category = $request->category;
 
+        // Generate a unique barcode
+        do {
+            $barcodeGenerator = mt_rand(100000000000, 999999999999);
+        } while (Product::where('barcode', $barcodeGenerator)->exists());
+
+        $product->barcode = $barcodeGenerator;
+
         $product->save();
+
 
         // return response()->json([
         //     'success' => 'Product added successfully!'
@@ -282,7 +290,7 @@ class ProductController extends Controller
         if ($product_name) {
             $products = $products->where(function ($query) use ($product_name) {
                 $query->where('name', 'like', "%{$product_name}%")
-                    ->orwhere('item_id', 'like', "%{$product_name}%");;
+                    ->orwhere('barcode', 'like', "%{$product_name}%");;
             });
         }
 

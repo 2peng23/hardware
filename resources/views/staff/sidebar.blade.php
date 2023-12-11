@@ -11,10 +11,15 @@
     <!-- Divider -->
     <hr class="sidebar-divider my-0" />
 
-    <li class="nav-item">
+    <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
         <a class="nav-link" href="{{ route('dashboard') }}">
             <i class="fa fa-fw fa-refresh"></i>
             <span>Request</span></a>
+    </li>
+    <li class="nav-item {{ request()->routeIs('point-of-sale') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('point-of-sale') }}">
+            <i class="fa fa-fw fa-coins"></i>
+            <span>POS</span></a>
     </li>
 
     <!-- Sidebar Toggler (Sidebar) -->
