@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Stock;
 use App\Models\Transaction;
@@ -177,6 +178,45 @@ class StaffController extends Controller
     public function pointOfSale()
     {
         $items = Product::all();
-        return view('staff.pos', compact('items'));
+        $carts = Cart::all();
+        return view('staff.pos', compact('items', 'carts'));
+    }
+    // get barcode
+    public function getBarcode(Request $request)
+    {
+        $barcode = $request->item_barcode;
+        $item = Product::where('barcode', $barcode)->first();
+        if ($item) {
+            $existing = Cart::where('item_id', $item->id)->first();
+            if ($existing) {
+                $existing->quantity += 1;
+                $existing->save();
+                return response()->json([
+                    'added' => "Item Quantity Updated"
+                ]);
+            } else {
+
+                $cart = new Cart();
+                $cart->item_id = $item->id;
+                $cart->save();
+                return response()->json([
+                    'added' => "Item Added"
+                ]);
+            }
+        } else {
+            return response()->json([
+                'error' => 'Item not found.'
+            ]);
+        }
+    }
+    public function resetCart()
+    {
+        $carts = Cart::all();
+
+        foreach ($carts as $cart) {
+            $cart->delete();
+        }
+
+        return;
     }
 }

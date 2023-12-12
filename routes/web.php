@@ -84,6 +84,8 @@ Route::middleware('auth')->group(function () {
     Route::get('view-transaction/{id}', [StaffController::class, 'viewTransaction'])->name('view-transaction');
     Route::get('fetch-product', [StaffController::class, 'fetchProduct'])->name('fetch-product');
     Route::get('point-of-sale', [StaffController::class, 'pointOfSale'])->name('point-of-sale');
+    Route::get('get-barcode', [StaffController::class, 'getBarcode'])->name('get-barcode');
+    Route::get('reset-cart', [StaffController::class, 'resetCart'])->name('reset-cart');
 });
 
 Route::middleware('auth')->group(function () {
