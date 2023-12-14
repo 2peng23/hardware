@@ -86,6 +86,11 @@ Route::middleware('auth')->group(function () {
     Route::get('point-of-sale', [StaffController::class, 'pointOfSale'])->name('point-of-sale');
     Route::get('get-barcode', [StaffController::class, 'getBarcode'])->name('get-barcode');
     Route::get('reset-cart', [StaffController::class, 'resetCart'])->name('reset-cart');
+    Route::get('cart-quantity', [StaffController::class, 'cartQuantity'])->name('cart-quantity');
+    Route::post('update-cart-quantity', [StaffController::class, 'updateQuantity'])->name('update-cart-quantity');
+    Route::get('remove-cart', [StaffController::class, 'removeCart'])->name('remove-cart');
+    Route::post('proceed-purchase', [StaffController::class, 'proceedPurchase'])->name('proceed-purchase');
+    Route::get('purchase-items', [StaffController::class, 'purchaseItems'])->name('purchase-items');
 });
 
 Route::middleware('auth')->group(function () {

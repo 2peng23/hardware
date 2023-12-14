@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Product;
+use App\Models\Purchase;
 use App\Models\Stock;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -178,8 +179,12 @@ class StaffController extends Controller
     public function pointOfSale()
     {
         $items = Product::all();
-        $carts = Cart::all();
-        return view('staff.pos', compact('items', 'carts'));
+        $carts = Cart::where('status', 'ongoing')->get();
+        $total_price = $carts->sum(function ($cart) use ($items) {
+            $item = $items->where('id', $cart->item_id)->first();
+            return $item->price * $cart->quantity;
+        });
+        return view('staff.pos', compact('items', 'carts', 'total_price'));
     }
     // get barcode
     public function getBarcode(Request $request)
@@ -189,8 +194,10 @@ class StaffController extends Controller
         if ($item) {
             $existing = Cart::where('item_id', $item->id)->first();
             if ($existing) {
+                // add cart quantity
                 $existing->quantity += 1;
                 $existing->save();
+
                 return response()->json([
                     'added' => "Item Quantity Updated"
                 ]);
@@ -199,6 +206,9 @@ class StaffController extends Controller
                 $cart = new Cart();
                 $cart->item_id = $item->id;
                 $cart->save();
+
+
+
                 return response()->json([
                     'added' => "Item Added"
                 ]);
@@ -218,5 +228,92 @@ class StaffController extends Controller
         }
 
         return;
+    }
+    public function cartQuantity(Request $request)
+    {
+        $id = $request->id;
+        $cart = Cart::find($id);
+        $item = Product::where('id', $cart->item_id)->first();
+        return response()->json([
+            'quantity' => $cart->quantity,
+            'item' => $item
+        ]);
+    }
+    public function updateQuantity(Request $request)
+    {
+        $id = $request->item_id;
+        $cart = Cart::find($id);
+        $cart->quantity = $request->quantity;
+        $cart->save();
+        return response()->json([
+            'success' => "Quantity updated!"
+        ]);
+    }
+    public function removeCart(Request $request)
+    {
+        $id = $request->id;
+        $cart = Cart::find($id);
+        $cart->delete();
+        return response()->json([
+            'error' => "Item removed!"
+        ]);
+    }
+    public function proceedPurchase(Request $request)
+    {
+        // get all the items in the cart
+        $carts = Cart::all();
+
+        foreach ($carts as $cart) {
+            // subtract from product quantity
+            $product = Product::where('id', $cart->item_id)->first();
+            $product->quantity -= $cart->quantity;
+            $product->save();
+
+            // create new Stock
+            $stock = new Stock();
+            $stock->item_id = $cart->item_id;
+            $stock->quantity = 0;
+            $stock->issued = $cart->quantity;
+            $stock->beginning_balance = $product->quantity;
+            $stock->ending_balance = $product->quantity - $cart->quantity;
+            // $stock->supplier = '';
+            $stock->save();
+        }
+
+
+        // Initialize arrays to store item_ids and quantities
+        $itemIds = [];
+        $quantities = [];
+
+        foreach ($carts as $cart) {
+            // Assuming $cart->item_id and $cart->quantity are JSON strings, decode them
+            $item_id = json_decode($cart->item_id);
+            $quantity = json_decode($cart->quantity);
+
+            // Append values to arrays
+            $itemIds[] = $item_id;
+            $quantities[] = $quantity;
+        }
+
+        // Create a purchase
+        $purchase = new Purchase();
+        $purchase->product_id = $itemIds;
+        $purchase->product_quantity = $quantities;
+        $purchase->payment = $request->product_payment;
+        $purchase->save();
+
+
+        // delete the cart
+
+        foreach ($carts as $cart) {
+            $cart->delete();
+        }
+
+        return to_route('purchase-items');
+    }
+    public function purchaseItems()
+    {
+        $data = Purchase::latest()->first();
+        return view('staff.purchase', compact('data'));
     }
 }
