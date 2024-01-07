@@ -90,7 +90,8 @@ Route::middleware('auth')->group(function () {
     Route::post('update-cart-quantity', [StaffController::class, 'updateQuantity'])->name('update-cart-quantity');
     Route::get('remove-cart', [StaffController::class, 'removeCart'])->name('remove-cart');
     Route::post('proceed-purchase', [StaffController::class, 'proceedPurchase'])->name('proceed-purchase');
-    Route::get('purchase-items', [StaffController::class, 'purchaseItems'])->name('purchase-items');
+    Route::get('purchase-items/{id?}', [StaffController::class, 'purchaseItems'])->name('purchase-items');
+    Route::get('add-item/{id}', [StaffController::class, 'addItem'])->name('add-item');
 });
 
 Route::middleware('auth')->group(function () {

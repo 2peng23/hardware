@@ -198,9 +198,9 @@ class StaffController extends Controller
                 $existing->quantity += 1;
                 $existing->save();
 
-                return response()->json([
-                    'added' => "Item Quantity Updated"
-                ]);
+                // return response()->json([
+                //     'added' => "Item Quantity Updated"
+                // ]);
             } else {
 
                 $cart = new Cart();
@@ -209,9 +209,9 @@ class StaffController extends Controller
 
 
 
-                return response()->json([
-                    'added' => "Item Added"
-                ]);
+                // return response()->json([
+                //     'added' => "Item Added"
+                // ]);
             }
         } else {
             return response()->json([
@@ -297,10 +297,12 @@ class StaffController extends Controller
 
         // Create a purchase
         $purchase = new Purchase();
+        $purchase->invoice_no = 'ABC' . str_pad(Purchase::max('id') + 1, 6, '0', STR_PAD_LEFT);
         $purchase->product_id = $itemIds;
         $purchase->product_quantity = $quantities;
         $purchase->payment = $request->product_payment;
         $purchase->save();
+
 
 
         // delete the cart
@@ -309,11 +311,46 @@ class StaffController extends Controller
             $cart->delete();
         }
 
-        return to_route('purchase-items');
+        return redirect()->route('purchase-items', ['id' => null]);
     }
-    public function purchaseItems()
+    public function purchaseItems($id = null)
     {
-        $data = Purchase::latest()->first();
+        if ($id) {
+            $data = Purchase::find($id);
+        } else {
+            $data = Purchase::latest()->first();
+        }
+
         return view('staff.purchase', compact('data'));
+    }
+
+    public function addItem($id)
+    {
+        // // $item = $id;
+        // return response()->json([
+        //     'id' => $id
+        // ]);
+
+        $existing = Cart::where('item_id', $id)->first();
+        if ($existing) {
+            // add cart quantity
+            $existing->quantity += 1;
+            $existing->save();
+
+            // return response()->json([
+            //     'added' => "Item Quantity Updated"
+            // ]);
+        } else {
+
+            $cart = new Cart();
+            $cart->item_id = $id;
+            $cart->save();
+
+
+
+            // return response()->json([
+            //     'added' => "Item Added"
+            // ]);
+        }
     }
 }

@@ -3,8 +3,8 @@
     <div class="row">
         <div class="col-lg-9 col-md-8 col-12 mb-5 shadow">
             <div class="p-4">
-                <label for="item_barcode" class="form-label fw-bolder">Add Item's Barcode</label>
-                <input type="text" class="form-control my-2 w-50" placeholder="Input barcode..." name="item_barcode"
+                <label for="item_barcode" class="form-label fw-bolder">Item's Barcode</label>
+                <input type="text" class="form-control my-2 w-50" placeholder="Scan barcode..." name="item_barcode"
                     id="item_barcode">
                 <p class="text-danger mt-2" id="notFound" style="display: none;"></p>
                 <p class="text-success mt-2" id="added" style="display: none;"></p>
@@ -80,7 +80,7 @@
                                 {{-- <td>{!! DNS1D::getBarcodeHTML($item->barcode, 'EAN13', 4, 50, 'black') !!}</td> --}}
                                 {{-- <td>{!! DNS1D::getBarcodeSVG($item->barcode, 'EAN13', 4, 50, 'black') !!}</td> --}}
                                 <td>
-                                    <button value="{{ $item->id }}" class="btn btn-primary btn-sm">
+                                    <button value="{{ $item->id }}" class="btn btn-primary btn-sm btn-add-item">
                                         <i class="fa fa-plus"></i>
                                     </button>
                                 </td>
@@ -90,6 +90,32 @@
                 </table>
             </div>
         </div>
+    </div>
+    <h6>Recent Transactions</h6>
+    <div class="mt-3 table-responsive container" style="max-height:300px">
+        <table class="table">
+            <thead>
+                <tr class="text-center">
+                    <th>Transaction ID</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $transactions = App\Models\Purchase::latest()->get();
+                @endphp
+                @foreach ($transactions as $trans)
+                    <tr class="text-center">
+                        <td>{{ $trans->invoice_no }}</td>
+                        <td>{{ \Carbon\Carbon::parse($trans->created_at)->format('F j, Y') }}</td>
+                        <td>
+                            <a href="{{ route('purchase-items', $trans->id) }}" class="btn btn-primary btn-sm">view</a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div>
     <x-cart-quantity />
 @endsection
@@ -219,5 +245,17 @@
                 $('#change').text('Invalid input');
             }
         });
+        // add item manually
+        $(document).on('click', '.btn-add-item', function() {
+            var id = $(this).val();
+            // console.log(id);
+            $.ajax({
+                url: "/add-item/" + id,
+                type: "get",
+                success: function(res) {
+                    $('#cart-data').load(location.href + ' #cart-data');
+                }
+            })
+        })
     </script>
 @endsection

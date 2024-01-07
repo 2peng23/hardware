@@ -10,7 +10,7 @@
             </div>
             <div>
                 <h4>Sales Invoice</h4>
-                <p>Invoice No. <span>ABC09876656</span></p>
+                <p>Invoice No. <span>{{ $data->invoice_no }}</span></p>
                 <p>Date: {{ date('F j, Y') }}</p>
             </div>
         </div>
